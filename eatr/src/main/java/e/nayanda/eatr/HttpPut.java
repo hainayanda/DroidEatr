@@ -9,37 +9,34 @@ import e.nayanda.eatr.model.RestResponse;
  * Created by nayanda on 08/02/18.
  */
 
-class HttpGet extends BaseHttpRequest<HttpGet> {
+class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Finisher finisher) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                finisher.onFinished(executor("GET"));
+                finisher.onFinished(executor("PUT", body));
             }
         });
         thread.run();
     }
 
     @Override
-    public <O> void asyncExecute(final RestFinisher<O> finisher, final Class<O> withModelClass) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                finisher.onFinished(executor(withModelClass,"GET"));
-            }
-        });
-        thread.run();
+    public <O> void asyncExecute(RestFinisher<O> finisher, Class<O> withModelClass) {
+        UnsupportedOperationException exception = new UnsupportedOperationException("PUT doesn't have response body");
+        finisher.onFinished(
+                new RestResponse<O>(null, -1, false, exception));
+        throw exception;
     }
 
     @Override
     public Response execute() {
-        return executor("GET");
+        return executor("PUT", body);
     }
 
     @Override
     public <O> RestResponse<O> execute(Class<O> withModelClass) {
-        return executor(withModelClass,"GET");
+        throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 }

@@ -6,6 +6,16 @@ package e.nayanda.eatr;
 
 public class HttpRequestBuilder {
 
+    public HttpRequestWithBody httpPost() {
+        return new HttpPost();
+    }
 
+    public HttpRequest httpGet() {
+        return new HttpGet();
+    }
+
+    public HttpRequestWithBody httpPut() {
+        return new HttpPut();
+    }
 
 }

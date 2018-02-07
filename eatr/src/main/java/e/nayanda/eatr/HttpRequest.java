@@ -2,10 +2,10 @@ package e.nayanda.eatr;
 
 import java.util.Map;
 
-import nayanda.eatr.model.Finisher;
-import nayanda.eatr.model.Response;
-import nayanda.eatr.model.RestFinisher;
-import nayanda.eatr.model.RestResponse;
+import e.nayanda.eatr.model.Finisher;
+import e.nayanda.eatr.model.Response;
+import e.nayanda.eatr.model.RestFinisher;
+import e.nayanda.eatr.model.RestResponse;
 
 /**
  * Created by nayanda on 07/02/18.
