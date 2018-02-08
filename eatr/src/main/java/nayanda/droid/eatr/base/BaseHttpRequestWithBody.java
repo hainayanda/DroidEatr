@@ -1,4 +1,4 @@
-package nayanda.droid.eatr;
+package nayanda.droid.eatr.base;
 
 import com.google.gson.Gson;
 
@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by nayanda on 08/02/18.
  */
 
-abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody> extends BaseHttpRequest<T> implements HttpRequestWithBody<T> {
+public abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody> extends BaseHttpRequest<T> implements HttpRequestWithBody<T> {
 
     protected String body;
 

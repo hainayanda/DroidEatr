@@ -6,12 +6,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
 
-import nayanda.droid.eatr.model.Response;
-import nayanda.droid.eatr.model.RestResponse;
+import nayanda.droid.eatr.digester.Response;
+import nayanda.droid.eatr.digester.RestResponse;
 
 /**
  * Created by nayanda on 08/02/18.
@@ -66,6 +67,8 @@ public class HttpURLConnectionHelper {
                 String extracted = bufferExtractor(reader);
                 response = new Response(extracted, statusCode, isSuccess(statusCode));
             }
+        } catch (SocketTimeoutException exception) {
+            response = new Response(null, statusCode, false, exception);
         } catch (IOException exception) {
             response = new Response(null, statusCode, false, exception);
         }
@@ -78,20 +81,22 @@ public class HttpURLConnectionHelper {
         try {
             statusCode = connection.getResponseCode();
             if (!isSuccess(connection) || connection.getInputStream() == null)
-                response = new RestResponse<>(null, statusCode, false);
+                response = new RestResponse<>(null, null, statusCode, false);
             else {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String extracted = bufferExtractor(reader);
                 if (extracted.equals(""))
-                    response = new RestResponse<>(null, statusCode, isSuccess(statusCode));
+                    response = new RestResponse<>(extracted, null, statusCode, isSuccess(statusCode));
                 else {
                     Gson gson = new Gson();
                     T obj = gson.fromJson(extracted, tClass);
-                    response = new RestResponse<>(obj, statusCode, isSuccess(statusCode));
+                    response = new RestResponse<>(extracted, obj, statusCode, isSuccess(statusCode));
                 }
             }
+        } catch (SocketTimeoutException exception) {
+            response = new RestResponse<>(null, null, statusCode, false, exception);
         } catch (IOException exception) {
-            response = new RestResponse<>(null, statusCode, false, exception);
+            response = new RestResponse<>(null, null, statusCode, false, exception);
         }
         return response;
     }

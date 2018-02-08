@@ -1,28 +1,30 @@
-package nayanda.droid.eatr;
+package nayanda.droid.eatr.base;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import nayanda.droid.eatr.model.Response;
-import nayanda.droid.eatr.model.RestResponse;
+import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.Response;
+import nayanda.droid.eatr.digester.RestResponse;
 import nayanda.droid.eatr.utils.HttpURLConnectionHelper;
 
 /**
  * Created by nayanda on 08/02/18.
  */
 
-abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest<T> {
+public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest<T> {
 
-    protected String url;
-    protected Map<String, String> params;
-    protected Map<String, String> headers;
-    protected int timeout = 10000;
+    private String url;
+    private Map<String, String> params;
+    private Map<String, String> headers;
+    private int timeout = 10000;
 
     private static String buildUrlWithParam(String url, Map<String, String> params) throws UnsupportedEncodingException {
         if (params == null) return url;
@@ -35,6 +37,16 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
         }
         strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
         return strBuilder.toString();
+    }
+
+    protected static <O extends Response> void asyncResponseConsumer(Finisher<O> finisher, O response) {
+        if (response.hadException()) {
+            if (response.getException() instanceof SocketTimeoutException) {
+                finisher.onTimeout();
+                return;
+            }
+        }
+        finisher.onResponded(response);
     }
 
     @Override
@@ -78,7 +90,7 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
         return (T) this;
     }
 
-    protected HttpURLConnection initRequest() throws IOException {
+    private HttpURLConnection initRequest() throws IOException {
         String fullUrl = buildUrlWithParam(url, params);
         URL urlObj = new URL(fullUrl);
         HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
@@ -110,7 +122,7 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
             }
             return HttpURLConnectionHelper.execute(connection, oClass);
         } catch (IOException exception) {
-            return new RestResponse<>(null, -1, false, exception);
+            return new RestResponse<>(null, null, -1, false, exception);
         }
     }
 

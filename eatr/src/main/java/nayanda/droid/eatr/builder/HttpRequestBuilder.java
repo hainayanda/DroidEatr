@@ -1,4 +1,7 @@
-package nayanda.droid.eatr;
+package nayanda.droid.eatr.builder;
+
+import nayanda.droid.eatr.base.HttpRequest;
+import nayanda.droid.eatr.base.HttpRequestWithBody;
 
 /**
  * Created by nayanda on 07/02/18.

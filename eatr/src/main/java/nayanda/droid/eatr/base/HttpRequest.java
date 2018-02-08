@@ -1,11 +1,10 @@
-package nayanda.droid.eatr;
+package nayanda.droid.eatr.base;
 
 import java.util.Map;
 
-import nayanda.droid.eatr.model.Finisher;
-import nayanda.droid.eatr.model.Response;
-import nayanda.droid.eatr.model.RestFinisher;
-import nayanda.droid.eatr.model.RestResponse;
+import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.Response;
+import nayanda.droid.eatr.digester.RestResponse;
 
 /**
  * Created by nayanda on 07/02/18.
@@ -24,9 +23,9 @@ public interface HttpRequest<T extends HttpRequest> {
 
     T setTimeout(int timeout);
 
-    void asyncExecute(Finisher finisher);
+    void asyncExecute(Finisher<Response> finisher);
 
-    <O> void asyncExecute(RestFinisher<O> finisher, Class<O> withModelClass);
+    <O> void asyncExecute(Finisher<RestResponse<O>> finisher, Class<O> withModelClass);
 
     Response execute();
 
