@@ -8,7 +8,7 @@ On build.gradle (Project)
 allprojects {
     repositories {
         ...
-    maven { url 'https://jitpack.io' }
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
