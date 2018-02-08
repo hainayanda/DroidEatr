@@ -1,27 +1,27 @@
-package e.nayanda.eatr.model;
+package nayanda.droid.eatr.model;
 
 /**
  * Created by nayanda on 07/02/18.
  */
 
-public class RestResponse<T> {
-    private Exception exception;
-    private T body;
+public class Response {
+    private String body;
     private int statusCode;
     private boolean isSuccess;
+    private Exception exception;
 
-    public RestResponse(T body, int statusCode, boolean isSuccess) {
+    public Response(String body, int statusCode, boolean isSuccess) {
         this.body = body;
         this.statusCode = statusCode;
         this.isSuccess = isSuccess;
     }
 
-    public RestResponse(T body, int statusCode, boolean isSuccess, Exception exception){
+    public Response(String body, int statusCode, boolean isSuccess, Exception exception) {
         this(body, statusCode, isSuccess);
         this.exception = exception;
     }
 
-    public T getBody() {
+    public String getBody() {
         return body;
     }
 

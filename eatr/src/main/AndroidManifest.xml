@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="e.nayanda.eatr" />
+<manifest package="nayanda.droid.eatr" />

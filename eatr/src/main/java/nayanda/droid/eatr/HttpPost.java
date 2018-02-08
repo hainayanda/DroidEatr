@@ -1,15 +1,15 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
-import e.nayanda.eatr.model.Finisher;
-import e.nayanda.eatr.model.Response;
-import e.nayanda.eatr.model.RestFinisher;
-import e.nayanda.eatr.model.RestResponse;
+import nayanda.droid.eatr.model.Finisher;
+import nayanda.droid.eatr.model.Response;
+import nayanda.droid.eatr.model.RestFinisher;
+import nayanda.droid.eatr.model.RestResponse;
 
 /**
  * Created by nayanda on 08/02/18.
  */
 
-class HttpPost extends BaseHttpRequestWithBody<HttpPost>{
+class HttpPost extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Finisher finisher) {
@@ -27,7 +27,7 @@ class HttpPost extends BaseHttpRequestWithBody<HttpPost>{
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                finisher.onFinished(executor(withModelClass,"POST", body));
+                finisher.onFinished(executor(withModelClass, "POST", body));
             }
         });
         thread.run();
@@ -40,6 +40,6 @@ class HttpPost extends BaseHttpRequestWithBody<HttpPost>{
 
     @Override
     public <O> RestResponse<O> execute(Class<O> withModelClass) {
-        return executor(withModelClass,"POST", body);
+        return executor(withModelClass, "POST", body);
     }
 }

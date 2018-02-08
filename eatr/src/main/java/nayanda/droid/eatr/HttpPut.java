@@ -1,9 +1,9 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
-import e.nayanda.eatr.model.Finisher;
-import e.nayanda.eatr.model.Response;
-import e.nayanda.eatr.model.RestFinisher;
-import e.nayanda.eatr.model.RestResponse;
+import nayanda.droid.eatr.model.Finisher;
+import nayanda.droid.eatr.model.Response;
+import nayanda.droid.eatr.model.RestFinisher;
+import nayanda.droid.eatr.model.RestResponse;
 
 /**
  * Created by nayanda on 08/02/18.

@@ -1,4 +1,4 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
 import com.google.gson.Gson;
 
@@ -18,23 +18,22 @@ abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody> extend
     @Override
     public T addBody(String body) {
         this.body = body;
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public <O> T addJsonBody(O obj) {
         if (obj == null) throw new NullPointerException("Json body cannot be null");
         Gson gson = new Gson();
-        String json = gson.toJson(obj);
-        this.body = json;
+        this.body = gson.toJson(obj);
         addHeaders("Content-Type", "application/json");
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T addFormUrlEncoded(Map<String, String> form) throws UnsupportedEncodingException {
         if (form == null) throw new NullPointerException("Form cannot be null");
-        if (form.size() == 0) return (T)this;
+        if (form.size() == 0) return (T) this;
         StringBuilder builder = new StringBuilder();
         Set<Map.Entry<String, String>> entries = form.entrySet();
         for (Map.Entry<String, String> entry : entries) {
@@ -45,6 +44,6 @@ abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody> extend
         if (builder.length() > 0) builder = builder.deleteCharAt(builder.length() - 1);
         addBody(builder.toString());
         addHeaders("Content-Type", "application/x-www-form-urlencoded");
-        return (T)this;
+        return (T) this;
     }
 }

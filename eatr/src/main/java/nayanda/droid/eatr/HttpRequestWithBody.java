@@ -1,4 +1,4 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;

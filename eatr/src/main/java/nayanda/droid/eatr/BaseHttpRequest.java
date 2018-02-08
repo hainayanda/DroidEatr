@@ -1,4 +1,4 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import e.nayanda.eatr.model.Response;
-import e.nayanda.eatr.model.RestResponse;
-import e.nayanda.eatr.utils.HttpURLConnectionHelper;
+import nayanda.droid.eatr.model.Response;
+import nayanda.droid.eatr.model.RestResponse;
+import nayanda.droid.eatr.utils.HttpURLConnectionHelper;
 
 /**
  * Created by nayanda on 08/02/18.
@@ -24,45 +24,58 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
     protected Map<String, String> headers;
     protected int timeout = 10000;
 
+    private static String buildUrlWithParam(String url, Map<String, String> params) throws UnsupportedEncodingException {
+        if (params == null) return url;
+        if (params.size() == 0) return url;
+        StringBuilder strBuilder = new StringBuilder().append(url).append("?");
+        Set<Map.Entry<String, String>> entries = params.entrySet();
+        for (Map.Entry<String, String> entry : entries) {
+            strBuilder = strBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8")).append("=")
+                    .append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
+        }
+        strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
+        return strBuilder.toString();
+    }
+
     @Override
     public T setUrl(String url) {
-        if(url == null) throw new NullPointerException("Url is null");
+        if (url == null) throw new NullPointerException("Url is null");
         this.url = url;
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T setParams(Map<String, String> params) {
-        if(params == null) throw new NullPointerException("Url is null");
+        if (params == null) throw new NullPointerException("Url is null");
         this.params = params;
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T setHeaders(Map<String, String> headers) {
-        if(headers == null) throw new NullPointerException("Url is null");
+        if (headers == null) throw new NullPointerException("Url is null");
         this.headers = headers;
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T addHeaders(String key, String value) {
-        if(headers == null) headers = new HashMap<>();
+        if (headers == null) headers = new HashMap<>();
         headers.put(key, value);
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T addAuthorization(String token) {
-        if(headers == null) headers = new HashMap<>();
+        if (headers == null) headers = new HashMap<>();
         headers.put("Authorization", "bearer " + token);
-        return (T)this;
+        return (T) this;
     }
 
     @Override
     public T setTimeout(int timeout) {
         this.timeout = timeout;
-        return (T)this;
+        return (T) this;
     }
 
     protected HttpURLConnection initRequest() throws IOException {
@@ -75,25 +88,12 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
         return connection;
     }
 
-    private static String buildUrlWithParam(String url, Map<String, String> params) throws UnsupportedEncodingException {
-        if(params == null) return url;
-        if(params.size() == 0) return url;
-        StringBuilder strBuilder = new StringBuilder().append(url).append("?");
-        Set<Map.Entry<String, String>> entries = params.entrySet();
-        for (Map.Entry<String, String> entry: entries) {
-            strBuilder = strBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8")).append("=")
-                    .append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
-        }
-        strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
-        return strBuilder.toString();
-    }
-
-    protected Response executor(String method, String body){
+    protected Response executor(String method, String body) {
         try {
             HttpURLConnection connection = initRequest();
             connection.setRequestMethod(method);
-            if(body != null){
-                if(!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+            if (body != null) {
+                if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
             }
             return HttpURLConnectionHelper.execute(connection);
         } catch (IOException exception) {
@@ -101,24 +101,24 @@ abstract class BaseHttpRequest<T extends BaseHttpRequest> implements HttpRequest
         }
     }
 
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body){
+    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
         try {
             HttpURLConnection connection = initRequest();
             connection.setRequestMethod(method);
-            if(body != null){
-                if(!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+            if (body != null) {
+                if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
             }
             return HttpURLConnectionHelper.execute(connection, oClass);
-        }catch (IOException exception){
+        } catch (IOException exception) {
             return new RestResponse<>(null, -1, false, exception);
         }
     }
 
-    protected Response executor(String method){
+    protected Response executor(String method) {
         return executor(method, null);
     }
 
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method){
+    protected <O> RestResponse<O> executor(Class<O> oClass, String method) {
         return executor(oClass, method, null);
     }
 

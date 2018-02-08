@@ -1,4 +1,4 @@
-package e.nayanda.eatr;
+package nayanda.droid.eatr;
 
 /**
  * Created by nayanda on 07/02/18.
