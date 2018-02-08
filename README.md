@@ -4,7 +4,7 @@ RESTful consumer for android
 ## Using Eatr
 ### Gradle
 On build.gradle (Project)
-```json
+```
 allprojects {
     repositories {
         ...
@@ -13,7 +13,7 @@ allprojects {
 }
 ```
 On build.gradle (Module)
-```json
+```
 dependencies {
     compile 'com.github.nayanda1:DroidEatr:-SNAPSHOT'
 }
