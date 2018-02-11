@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 import nayanda.droid.eatr.utils.HttpURLConnectionHelper;
@@ -39,14 +39,14 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return strBuilder.toString();
     }
 
-    protected static <O extends Response> void asyncResponseConsumer(Finisher<O> finisher, O response) {
+    protected static <O extends Response> void asyncResponseConsumer(Digester<O> oDigester, O response) {
         if (response.hadException()) {
             if (response.getException() instanceof SocketTimeoutException) {
-                finisher.onTimeout();
+                oDigester.onTimeout();
                 return;
             }
         }
-        finisher.onResponded(response);
+        oDigester.onResponded(response);
     }
 
     @Override
@@ -100,26 +100,30 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return connection;
     }
 
-    protected Response executor(String method, String body) {
+    protected Response executor(String method, String body, Digester<Response> responseDigester) {
         try {
             HttpURLConnection connection = initRequest();
             connection.setRequestMethod(method);
             if (body != null) {
                 if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
             }
+            if (responseDigester != null)
+                responseDigester.onBeforeSending(connection);
             return HttpURLConnectionHelper.execute(connection);
         } catch (IOException exception) {
             return new Response(null, -1, false, exception);
         }
     }
 
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
+    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body, Digester<RestResponse<O>> restResponseDigester) {
         try {
             HttpURLConnection connection = initRequest();
             connection.setRequestMethod(method);
             if (body != null) {
                 if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
             }
+            if (restResponseDigester != null)
+                restResponseDigester.onBeforeSending(connection);
             return HttpURLConnectionHelper.execute(connection, oClass);
         } catch (IOException exception) {
             return new RestResponse<>(null, null, -1, false, exception);
@@ -127,11 +131,27 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected Response executor(String method) {
-        return executor(method, null);
+        return executor(method, null, null);
     }
 
     protected <O> RestResponse<O> executor(Class<O> oClass, String method) {
-        return executor(oClass, method, null);
+        return executor(oClass, method, null, null);
+    }
+
+    protected Response executor(String method, Digester<Response> responseDigester) {
+        return executor(method, null, responseDigester);
+    }
+
+    protected <O> RestResponse<O> executor(Class<O> oClass, String method, Digester<RestResponse<O>> restResponseDigester) {
+        return executor(oClass, method, null, restResponseDigester);
+    }
+
+    protected Response executor(String method, String body) {
+        return executor(method, body, null);
+    }
+
+    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
+        return executor(oClass, method, body, null);
     }
 
 }

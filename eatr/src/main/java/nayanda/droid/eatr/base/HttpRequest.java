@@ -2,6 +2,7 @@ package nayanda.droid.eatr.base;
 
 import java.util.Map;
 
+import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
@@ -23,11 +24,24 @@ public interface HttpRequest<T extends HttpRequest> {
 
     T setTimeout(int timeout);
 
-    void asyncExecute(Finisher<Response> finisher);
+    void asyncExecute(Digester<Response> responseDigester);
 
-    <O> void asyncExecute(Finisher<RestResponse<O>> finisher, Class<O> withModelClass);
+    <O> void asyncExecute(Digester<RestResponse<O>> restResponseDigester, Class<O> withModelClass);
 
+    void asyncExecute(Finisher<Response> responseFinisher);
+
+    <O> void asyncExecute(Finisher<RestResponse<O>> restResponseFinisher, Class<O> withModelClass);
+
+    /**
+     * @return will return null if timeout
+     */
     Response execute();
 
+    /**
+     *
+     * @param withModelClass
+     * @param <O>
+     * @return will return null if timeout
+     */
     <O> RestResponse<O> execute(Class<O> withModelClass);
 }
