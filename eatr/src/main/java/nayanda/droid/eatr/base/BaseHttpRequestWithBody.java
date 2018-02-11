@@ -41,7 +41,8 @@ public abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody>
             String value = URLEncoder.encode(entry.getValue(), "UTF-8");
             builder = builder.append(key).append("=").append(value).append("&");
         }
-        if (builder.length() > 0) builder = builder.deleteCharAt(builder.length() - 1);
+        if (builder.length() > 0 && builder.charAt(builder.length() - 1) == '&')
+            builder = builder.deleteCharAt(builder.length() - 1);
         addBody(builder.toString());
         addHeaders("Content-Type", "application/x-www-form-urlencoded");
         return (T) this;

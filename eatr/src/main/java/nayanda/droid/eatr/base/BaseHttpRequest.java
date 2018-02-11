@@ -35,7 +35,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
             strBuilder = strBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8")).append("=")
                     .append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
         }
-        strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
+        if (strBuilder.charAt(strBuilder.length() - 1) == '&')
+            strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
         return strBuilder.toString();
     }
 
@@ -58,14 +59,21 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     @Override
     public T setParams(Map<String, String> params) {
-        if (params == null) throw new NullPointerException("Url is null");
+        if (params == null) throw new NullPointerException("Param is null");
         this.params = params;
         return (T) this;
     }
 
     @Override
+    public T addParam(String key, String value) {
+        if (params == null) params = new HashMap<>();
+        params.put(key, value);
+        return (T) this;
+    }
+
+    @Override
     public T setHeaders(Map<String, String> headers) {
-        if (headers == null) throw new NullPointerException("Url is null");
+        if (headers == null) throw new NullPointerException("Header is null");
         this.headers = headers;
         return (T) this;
     }

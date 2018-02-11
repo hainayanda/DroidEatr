@@ -16,6 +16,8 @@ public interface HttpRequest<T extends HttpRequest> {
 
     T setParams(Map<String, String> params);
 
+    T addParam(String key, String value);
+
     T setHeaders(Map<String, String> headers);
 
     T addHeaders(String key, String value);
