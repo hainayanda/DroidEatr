@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.builder;
 
+import android.os.AsyncTask;
+
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
@@ -14,14 +16,13 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Response response = executor("PUT", body, responseDigester);
                 asyncResponseConsumer(responseDigester, response);
             }
         });
-        thread.run();
     }
 
     @Override
@@ -31,14 +32,13 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Finisher<Response> responseFinisher) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Response response = executor("PUT", body);
                 responseFinisher.onFinished(response);
             }
         });
-        thread.run();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.base;
 
+import android.os.AsyncTask;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -110,7 +112,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     protected Response executor(final String method, final String body, final Digester<Response> responseDigester) {
         final Response[] response = new Response[1];
-        Thread thread = new Thread(new Runnable() {
+        HttpTask task = new HttpTask(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -119,17 +121,18 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                     if (body != null) {
                         if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
                     }
-                    if (responseDigester != null)
+                    if (responseDigester != null) {
                         responseDigester.onBeforeSending(connection);
+                    }
                     response[0] = HttpURLConnectionHelper.execute(connection);
                 } catch (IOException exception) {
                     response[0] = new Response(null, -1, false, exception);
                 }
             }
         });
-        thread.run();
+        task.execute();
         try {
-            thread.wait(timeout * 2);
+            task.wait(timeout * 2);
         } catch (InterruptedException exception) {
             response[0] = new Response(null, -1, false, exception);
         }
@@ -137,8 +140,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected <O> RestResponse<O> executor(final Class<O> oClass, final String method, final String body, final Digester<RestResponse<O>> restResponseDigester) {
-        final RestResponse<O>[] restResponse = new RestResponse[1];
-        Thread thread = new Thread(new Runnable() {
+        final RestResponse[] restResponse = new RestResponse[1];
+        HttpTask task = new HttpTask(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -151,15 +154,15 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                         restResponseDigester.onBeforeSending(connection);
                     restResponse[0] = HttpURLConnectionHelper.execute(connection, oClass);
                 } catch (IOException exception) {
-                    restResponse[0] = new RestResponse<>(null, null, -1, false, exception);
+                    restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
                 }
             }
         });
-        thread.run();
+        task.execute();
         try {
-            thread.wait(timeout * 2);
+            task.wait(timeout * 2);
         } catch (InterruptedException exception) {
-            restResponse[0] = new RestResponse<>(null, null, -1, false, exception);
+            restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
         }
         return restResponse[0];
     }
@@ -186,6 +189,21 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
         return executor(oClass, method, body, null);
+    }
+
+    private static class HttpTask extends AsyncTask<Object, Integer, Object> {
+
+        private Runnable runnable;
+
+        HttpTask(Runnable runnable) {
+            this.runnable = runnable;
+        }
+
+        @Override
+        protected Object doInBackground(Object... _) {
+            runnable.run();
+            return null;
+        }
     }
 
 }

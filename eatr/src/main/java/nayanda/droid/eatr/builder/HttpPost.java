@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.builder;
 
+import android.os.AsyncTask;
+
 import java.net.SocketTimeoutException;
 
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
@@ -16,50 +18,46 @@ class HttpPost extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Response response = executor("POST", body, responseDigester);
                 asyncResponseConsumer(responseDigester, response);
             }
         });
-        thread.run();
     }
 
     @Override
     public <O> void asyncExecute(final Digester<RestResponse<O>> restResponseDigester, final Class<O> withModelClass) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 RestResponse<O> response = executor(withModelClass, "POST", body, restResponseDigester);
                 asyncResponseConsumer(restResponseDigester, response);
             }
         });
-        thread.run();
     }
 
     @Override
     public void asyncExecute(final Finisher<Response> responseFinisher) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Response response = executor("POST", body);
                 responseFinisher.onFinished(response);
             }
         });
-        thread.run();
     }
 
     @Override
     public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
-        Thread thread = new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 RestResponse<O> response = executor(withModelClass, "POST", body);
                 restResponseFinisher.onFinished(response);
             }
         });
-        thread.run();
     }
 
     @Override
