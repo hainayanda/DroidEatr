@@ -51,22 +51,30 @@ class HttpPost extends BaseHttpRequestWithBody<HttpPost> {
     }
 
     @Override
-    public <O> void asyncExecute(Finisher<RestResponse<O>> restResponseFinisher, Class<O> withModelClass) {
-        RestResponse<O> response = executor(withModelClass, "POST", body);
-        restResponseFinisher.onFinished(response);
+    public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RestResponse<O> response = executor(withModelClass, "POST", body);
+                restResponseFinisher.onFinished(response);
+            }
+        });
+        thread.run();
     }
 
     @Override
     public Response execute() {
         Response response = executor("POST", body);
-        if (response.getException() instanceof SocketTimeoutException) return null;
+        if (response.getException() instanceof SocketTimeoutException ||
+                response.getException() instanceof InterruptedException) return null;
         else return response;
     }
 
     @Override
     public <O> RestResponse<O> execute(Class<O> withModelClass) {
         RestResponse<O> response = executor(withModelClass, "POST", body);
-        if (response.getException() instanceof SocketTimeoutException) return null;
+        if (response.getException() instanceof SocketTimeoutException ||
+                response.getException() instanceof InterruptedException) return null;
         else return response;
     }
 }

@@ -51,22 +51,30 @@ class HttpGet extends BaseHttpRequest<HttpGet> {
     }
 
     @Override
-    public <O> void asyncExecute(Finisher<RestResponse<O>> restResponseFinisher, Class<O> withModelClass) {
-        RestResponse<O> response = executor(withModelClass, "GET");
-        restResponseFinisher.onFinished(response);
+    public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RestResponse<O> response = executor(withModelClass, "GET");
+                restResponseFinisher.onFinished(response);
+            }
+        });
+        thread.run();
     }
 
     @Override
     public Response execute() {
         Response response = executor("GET");
-        if (response.getException() instanceof SocketTimeoutException) return null;
+        if (response.getException() instanceof SocketTimeoutException ||
+                response.getException() instanceof InterruptedException) return null;
         else return response;
     }
 
     @Override
     public <O> RestResponse<O> execute(Class<O> withModelClass) {
         RestResponse<O> response = executor(withModelClass, "GET");
-        if (response.getException() instanceof SocketTimeoutException) return null;
+        if (response.getException() instanceof SocketTimeoutException ||
+                response.getException() instanceof InterruptedException) return null;
         else return response;
     }
 }

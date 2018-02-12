@@ -108,34 +108,60 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return connection;
     }
 
-    protected Response executor(String method, String body, Digester<Response> responseDigester) {
-        try {
-            HttpURLConnection connection = initRequest();
-            connection.setRequestMethod(method);
-            if (body != null) {
-                if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+    protected Response executor(final String method, final String body, final Digester<Response> responseDigester) {
+        final Response[] response = new Response[1];
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    if (responseDigester != null)
+                        responseDigester.onBeforeSending(connection);
+                    response[0] = HttpURLConnectionHelper.execute(connection);
+                } catch (IOException exception) {
+                    response[0] = new Response(null, -1, false, exception);
+                }
             }
-            if (responseDigester != null)
-                responseDigester.onBeforeSending(connection);
-            return HttpURLConnectionHelper.execute(connection);
-        } catch (IOException exception) {
-            return new Response(null, -1, false, exception);
+        });
+        thread.run();
+        try {
+            thread.wait(timeout * 2);
+        } catch (InterruptedException exception) {
+            response[0] = new Response(null, -1, false, exception);
         }
+        return response[0];
     }
 
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body, Digester<RestResponse<O>> restResponseDigester) {
-        try {
-            HttpURLConnection connection = initRequest();
-            connection.setRequestMethod(method);
-            if (body != null) {
-                if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+    protected <O> RestResponse<O> executor(final Class<O> oClass, final String method, final String body, final Digester<RestResponse<O>> restResponseDigester) {
+        final RestResponse<O>[] restResponse = new RestResponse[1];
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    if (restResponseDigester != null)
+                        restResponseDigester.onBeforeSending(connection);
+                    restResponse[0] = HttpURLConnectionHelper.execute(connection, oClass);
+                } catch (IOException exception) {
+                    restResponse[0] = new RestResponse<>(null, null, -1, false, exception);
+                }
             }
-            if (restResponseDigester != null)
-                restResponseDigester.onBeforeSending(connection);
-            return HttpURLConnectionHelper.execute(connection, oClass);
-        } catch (IOException exception) {
-            return new RestResponse<>(null, null, -1, false, exception);
+        });
+        thread.run();
+        try {
+            thread.wait(timeout * 2);
+        } catch (InterruptedException exception) {
+            restResponse[0] = new RestResponse<>(null, null, -1, false, exception);
         }
+        return restResponse[0];
     }
 
     protected Response executor(String method) {

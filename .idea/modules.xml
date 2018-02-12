@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DroidEatr.iml" filepath="$PROJECT_DIR$/DroidEatr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DroidEatr.iml" filepath="$PROJECT_DIR$/DroidEatr.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eatr/eatr.iml" filepath="$PROJECT_DIR$/eatr/eatr.iml" />
       <module fileurl="file://$PROJECT_DIR$/eatr/eatr.iml" filepath="$PROJECT_DIR$/eatr/eatr.iml" />
     </modules>
   </component>

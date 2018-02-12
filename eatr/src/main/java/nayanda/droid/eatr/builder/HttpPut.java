@@ -25,7 +25,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
     }
 
     @Override
-    public <O> void asyncExecute(Digester<RestResponse<O>> restResponseDigester, Class<O> withModelClass) {
+    public <O> void asyncExecute(final Digester<RestResponse<O>> restResponseDigester, final Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 
@@ -42,7 +42,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
     }
 
     @Override
-    public <O> void asyncExecute(Finisher<RestResponse<O>> restResponseFinisher, Class<O> withModelClass) {
+    public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 
