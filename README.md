@@ -15,7 +15,7 @@ allprojects {
 On build.gradle (Module)
 ```
 dependencies {
-    compile 'com.github.nayanda1:DroidEatr:-SNAPSHOT'
+    compile 'com.github.nayanda1:DroidEatr:v0.0.5'
 }
 ```
 ### Maven
@@ -33,6 +33,6 @@ Add on your maven dependency
 <dependency>
     <groupId>com.github.nayanda1</groupId>
     <artifactId>DroidEatr</artifactId>
-    <version>-SNAPSHOT</version>
+    <version>v0.0.5</version>
 </dependency>
 ```
