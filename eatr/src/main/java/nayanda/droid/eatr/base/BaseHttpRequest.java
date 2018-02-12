@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Response;
@@ -112,7 +114,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     protected Response executor(final String method, final String body, final Digester<Response> responseDigester) {
         final Response[] response = new Response[1];
-        HttpTask task = new HttpTask(new Runnable() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -128,11 +131,11 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                 } catch (IOException exception) {
                     response[0] = new Response(null, -1, false, exception);
                 }
+                countDownLatch.countDown();
             }
         });
-        task.execute();
         try {
-            task.wait(timeout * 2);
+            countDownLatch.await(timeout * 2, TimeUnit.MILLISECONDS);
         } catch (InterruptedException exception) {
             response[0] = new Response(null, -1, false, exception);
         }
@@ -141,7 +144,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     protected <O> RestResponse<O> executor(final Class<O> oClass, final String method, final String body, final Digester<RestResponse<O>> restResponseDigester) {
         final RestResponse[] restResponse = new RestResponse[1];
-        HttpTask task = new HttpTask(new Runnable() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -156,11 +160,11 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                 } catch (IOException exception) {
                     restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
                 }
+                countDownLatch.countDown();
             }
         });
-        task.execute();
         try {
-            task.wait(timeout * 2);
+            countDownLatch.await(timeout * 2, TimeUnit.MILLISECONDS);
         } catch (InterruptedException exception) {
             restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
         }
@@ -189,21 +193,6 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
 
     protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
         return executor(oClass, method, body, null);
-    }
-
-    private static class HttpTask extends AsyncTask<Object, Integer, Object> {
-
-        private Runnable runnable;
-
-        HttpTask(Runnable runnable) {
-            this.runnable = runnable;
-        }
-
-        @Override
-        protected Object doInBackground(Object... _) {
-            runnable.run();
-            return null;
-        }
     }
 
 }
