@@ -3,6 +3,7 @@ package nayanda.droid.eatr.builder;
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.ProgressDigester;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 
@@ -13,13 +14,22 @@ import nayanda.droid.eatr.digester.RestResponse;
 class HttpPost extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
+    public void asyncExecute(ProgressDigester<Response> responseProgressDigester) {
+        asyncExecutor("POST", body, responseProgressDigester);
+    }
+
+    @Override
+    public <O> void asyncExecute(ProgressDigester<RestResponse<O>> restResponseProgressDigester, Class<O> withModelClass) {
+        asyncExecutor(withModelClass, "POST", body, restResponseProgressDigester);
+    }
+
+    @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
         asyncExecutor("POST", body, responseDigester);
     }
 
     @Override
     public <O> void asyncExecute(final Digester<RestResponse<O>> restResponseDigester, final Class<O> withModelClass) {
-
         asyncExecutor(withModelClass, "POST", body, restResponseDigester);
     }
 

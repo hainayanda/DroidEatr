@@ -4,6 +4,7 @@ import java.util.Map;
 
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.ProgressDigester;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 
@@ -26,6 +27,11 @@ public interface HttpRequest<T extends HttpRequest> {
     T addAuthorization(String token);
 
     T setTimeout(int timeout);
+
+
+    void asyncExecute(final ProgressDigester<Response> responseProgressDigester);
+
+    <O> void asyncExecute(final ProgressDigester<RestResponse<O>> restResponseProgressDigester, final Class<O> withModelClass);
 
     void asyncExecute(final Digester<Response> responseDigester);
 

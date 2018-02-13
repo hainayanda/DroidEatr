@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
+import nayanda.droid.eatr.digester.ProgressDigester;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 
@@ -13,6 +14,16 @@ import nayanda.droid.eatr.digester.RestResponse;
  */
 
 class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
+
+    @Override
+    public void asyncExecute(ProgressDigester<Response> responseProgressDigester) {
+        asyncExecutor("PUT", body, responseProgressDigester);
+    }
+
+    @Override
+    public <O> void asyncExecute(ProgressDigester<RestResponse<O>> restResponseProgressDigester, Class<O> withModelClass) {
+        throw new UnsupportedOperationException("PUT doesn't have response body");
+    }
 
     @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
