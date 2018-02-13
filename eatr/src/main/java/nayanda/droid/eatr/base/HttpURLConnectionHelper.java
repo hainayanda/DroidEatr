@@ -22,7 +22,6 @@ import nayanda.droid.eatr.digester.RestResponse;
 
 class HttpURLConnectionHelper {
 
-    @org.jetbrains.annotations.Contract(pure = true)
     private static boolean isSuccess(int responseCode) {
         return (responseCode >= 200 && responseCode < 300);
     }
