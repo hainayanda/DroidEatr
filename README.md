@@ -40,7 +40,7 @@ allprojects {
 On build.gradle (Module)
 ```
 dependencies {
-    compile 'com.github.nayanda1:DroidEatr:v0.0.9-Beta'
+    compile 'com.github.nayanda1:DroidEatr:v0.0.9'
 }
 ```
 
@@ -59,7 +59,7 @@ Add on your maven dependency
 <dependency>
     <groupId>com.github.nayanda1</groupId>
     <artifactId>DroidEatr</artifactId>
-    <version>v0.0.9-Beta</version>
+    <version>v0.0.9</version>
 </dependency>
 ```
 
