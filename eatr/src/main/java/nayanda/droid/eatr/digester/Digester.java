@@ -27,4 +27,9 @@ public interface Digester<T extends Response> {
      * will ONLY run when connection is timeout
      */
     void onTimeout();
+
+    /**
+     * will ONLY run when there is an unhandled exception
+     */
+    void onException(Exception exception);
 }

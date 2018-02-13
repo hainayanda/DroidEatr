@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import nayanda.droid.eatr.digester.Digester;
+import nayanda.droid.eatr.digester.Finisher;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 import nayanda.droid.eatr.utils.HttpURLConnectionHelper;
@@ -42,16 +43,6 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         if (strBuilder.charAt(strBuilder.length() - 1) == '&')
             strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
         return strBuilder.toString();
-    }
-
-    protected static <O extends Response> void asyncResponseConsumer(Digester<O> oDigester, O response) {
-        if (response.hadException()) {
-            if (response.getException() instanceof SocketTimeoutException) {
-                oDigester.onTimeout();
-                return;
-            }
-        }
-        oDigester.onResponded(response);
     }
 
     @Override
@@ -112,7 +103,100 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return connection;
     }
 
-    protected Response executor(final String method, final String body, final Digester<Response> responseDigester) {
+    protected void asyncExecutor(
+            final String method, final String body, final Digester<Response> responseDigester) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Response response;
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    responseDigester.onBeforeSending(connection);
+                    response = HttpURLConnectionHelper.execute(connection);
+                    responseDigester.onResponded(response);
+                } catch (IOException exception) {
+                    if (exception instanceof SocketTimeoutException) responseDigester.onTimeout();
+                    else responseDigester.onException(exception);
+                }
+
+            }
+        });
+    }
+
+    protected <O> void asyncExecutor(
+            final Class<O> oClass, final String method, final String body,
+            final Digester<RestResponse<O>> restResponseDigester) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                RestResponse<O> response;
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    restResponseDigester.onBeforeSending(connection);
+                    response = HttpURLConnectionHelper.execute(connection, oClass);
+                    restResponseDigester.onResponded(response);
+                } catch (IOException exception) {
+                    if (exception instanceof SocketTimeoutException)
+                        restResponseDigester.onTimeout();
+                    else restResponseDigester.onException(exception);
+                }
+            }
+        });
+    }
+
+    protected void asyncExecutor(
+            final String method, final String body, final Finisher<Response> responseFinisher) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Response response;
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    response = HttpURLConnectionHelper.execute(connection);
+                } catch (IOException exception) {
+                    response = new Response(null, -1, false, exception);
+                }
+                responseFinisher.onFinished(response);
+            }
+        });
+    }
+
+    protected <O> void asyncExecutor(
+            final Class<O> oClass, final String method, final String body,
+            final Finisher<RestResponse<O>> restResponseFinisher) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                RestResponse<O> response;
+                try {
+                    HttpURLConnection connection = initRequest();
+                    connection.setRequestMethod(method);
+                    if (body != null) {
+                        if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
+                    }
+                    response = HttpURLConnectionHelper.execute(connection, oClass);
+                } catch (IOException exception) {
+                    response = new RestResponse<>(
+                            null, null, -1, false, exception);
+                }
+                restResponseFinisher.onFinished(response);
+            }
+        });
+    }
+
+    protected Response executor(final String method, final String body) {
         final Response[] response = new Response[1];
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AsyncTask.execute(new Runnable() {
@@ -123,9 +207,6 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                     connection.setRequestMethod(method);
                     if (body != null) {
                         if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
-                    }
-                    if (responseDigester != null) {
-                        responseDigester.onBeforeSending(connection);
                     }
                     response[0] = HttpURLConnectionHelper.execute(connection);
                 } catch (IOException exception) {
@@ -142,7 +223,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return response[0];
     }
 
-    protected <O> RestResponse<O> executor(final Class<O> oClass, final String method, final String body, final Digester<RestResponse<O>> restResponseDigester) {
+    protected <O> RestResponse<O> executor(
+            final Class<O> oClass, final String method, final String body) {
         final RestResponse[] restResponse = new RestResponse[1];
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AsyncTask.execute(new Runnable() {
@@ -154,8 +236,6 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
                     if (body != null) {
                         if (!body.equals("")) HttpURLConnectionHelper.addBody(connection, body);
                     }
-                    if (restResponseDigester != null)
-                        restResponseDigester.onBeforeSending(connection);
                     restResponse[0] = HttpURLConnectionHelper.execute(connection, oClass);
                 } catch (IOException exception) {
                     restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
@@ -172,27 +252,11 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected Response executor(String method) {
-        return executor(method, null, null);
+        return executor(method, null);
     }
 
     protected <O> RestResponse<O> executor(Class<O> oClass, String method) {
-        return executor(oClass, method, null, null);
-    }
-
-    protected Response executor(String method, Digester<Response> responseDigester) {
-        return executor(method, null, responseDigester);
-    }
-
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method, Digester<RestResponse<O>> restResponseDigester) {
-        return executor(oClass, method, null, restResponseDigester);
-    }
-
-    protected Response executor(String method, String body) {
-        return executor(method, body, null);
-    }
-
-    protected <O> RestResponse<O> executor(Class<O> oClass, String method, String body) {
-        return executor(oClass, method, body, null);
+        return executor(oClass, method, null);
     }
 
 }

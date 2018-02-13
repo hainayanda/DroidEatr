@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
@@ -55,10 +54,9 @@ public class HttpURLConnectionHelper {
         return builder.toString();
     }
 
-    public static Response execute(HttpURLConnection connection) {
+    public static Response execute(HttpURLConnection connection) throws IOException {
         int statusCode = -1;
         Response response;
-        try {
             statusCode = connection.getResponseCode();
             if (!isSuccess(connection) || connection.getInputStream() == null)
                 response = new Response(null, statusCode, false);
@@ -67,18 +65,12 @@ public class HttpURLConnectionHelper {
                 String extracted = bufferExtractor(reader);
                 response = new Response(extracted, statusCode, isSuccess(statusCode));
             }
-        } catch (SocketTimeoutException exception) {
-            response = new Response(null, statusCode, false, exception);
-        } catch (IOException exception) {
-            response = new Response(null, statusCode, false, exception);
-        }
         return response;
     }
 
-    public static <T> RestResponse<T> execute(HttpURLConnection connection, Class<T> tClass) {
+    public static <T> RestResponse<T> execute(HttpURLConnection connection, Class<T> tClass) throws IOException {
         int statusCode = -1;
         RestResponse<T> response;
-        try {
             statusCode = connection.getResponseCode();
             if (!isSuccess(connection) || connection.getInputStream() == null)
                 response = new RestResponse<>(null, null, statusCode, false);
@@ -93,11 +85,6 @@ public class HttpURLConnectionHelper {
                     response = new RestResponse<>(extracted, obj, statusCode, isSuccess(statusCode));
                 }
             }
-        } catch (SocketTimeoutException exception) {
-            response = new RestResponse<>(null, null, statusCode, false, exception);
-        } catch (IOException exception) {
-            response = new RestResponse<>(null, null, statusCode, false, exception);
-        }
         return response;
     }
 }

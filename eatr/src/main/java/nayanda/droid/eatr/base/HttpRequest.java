@@ -12,6 +12,7 @@ import nayanda.droid.eatr.digester.RestResponse;
  */
 
 public interface HttpRequest<T extends HttpRequest> {
+
     T setUrl(String url);
 
     T setParams(Map<String, String> params);
@@ -34,16 +35,7 @@ public interface HttpRequest<T extends HttpRequest> {
 
     <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass);
 
-    /**
-     * @return will return null if timeout
-     */
     Response execute();
 
-    /**
-     *
-     * @param withModelClass
-     * @param <O>
-     * @return will return null if timeout
-     */
     <O> RestResponse<O> execute(Class<O> withModelClass);
 }

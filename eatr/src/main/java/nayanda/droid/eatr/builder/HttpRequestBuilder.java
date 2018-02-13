@@ -9,15 +9,15 @@ import nayanda.droid.eatr.base.HttpRequestWithBody;
 
 public class HttpRequestBuilder {
 
-    public HttpRequestWithBody httpPost() {
+    public static HttpRequestWithBody httpPost() {
         return new HttpPost();
     }
 
-    public HttpRequest httpGet() {
+    public static HttpRequest httpGet() {
         return new HttpGet();
     }
 
-    public HttpRequestWithBody httpPut() {
+    public static HttpRequestWithBody httpPut() {
         return new HttpPut();
     }
 

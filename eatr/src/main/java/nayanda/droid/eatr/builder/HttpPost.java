@@ -1,9 +1,5 @@
 package nayanda.droid.eatr.builder;
 
-import android.os.AsyncTask;
-
-import java.net.SocketTimeoutException;
-
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
@@ -18,61 +14,33 @@ class HttpPost extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Response response = executor("POST", body, responseDigester);
-                asyncResponseConsumer(responseDigester, response);
-            }
-        });
+        asyncExecutor("POST", body, responseDigester);
     }
 
     @Override
     public <O> void asyncExecute(final Digester<RestResponse<O>> restResponseDigester, final Class<O> withModelClass) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                RestResponse<O> response = executor(withModelClass, "POST", body, restResponseDigester);
-                asyncResponseConsumer(restResponseDigester, response);
-            }
-        });
+
+        asyncExecutor(withModelClass, "POST", body, restResponseDigester);
     }
 
     @Override
     public void asyncExecute(final Finisher<Response> responseFinisher) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Response response = executor("POST", body);
-                responseFinisher.onFinished(response);
-            }
-        });
+        asyncExecutor("POST", body, responseFinisher);
     }
 
     @Override
     public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                RestResponse<O> response = executor(withModelClass, "POST", body);
-                restResponseFinisher.onFinished(response);
-            }
-        });
+
+        asyncExecutor(withModelClass, "POST", body, restResponseFinisher);
     }
 
     @Override
     public Response execute() {
-        Response response = executor("POST", body);
-        if (response.getException() instanceof SocketTimeoutException ||
-                response.getException() instanceof InterruptedException) return null;
-        else return response;
+        return executor("POST", body);
     }
 
     @Override
     public <O> RestResponse<O> execute(Class<O> withModelClass) {
-        RestResponse<O> response = executor(withModelClass, "POST", body);
-        if (response.getException() instanceof SocketTimeoutException ||
-                response.getException() instanceof InterruptedException) return null;
-        else return response;
+        return executor(withModelClass, "POST", body);
     }
 }

@@ -1,1 +1,6 @@
-<manifest package="nayanda.droid.eatr" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="nayanda.droid.eatr">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
+

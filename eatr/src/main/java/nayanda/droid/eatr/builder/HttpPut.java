@@ -16,13 +16,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(final Digester<Response> responseDigester) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Response response = executor("PUT", body, responseDigester);
-                asyncResponseConsumer(responseDigester, response);
-            }
-        });
+        asyncExecutor("PUT", body, responseDigester);
     }
 
     @Override
