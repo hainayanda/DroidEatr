@@ -95,6 +95,7 @@ Everything is same like synchronous, but you need to pass finisher object into t
 If your response contains some Json, you can use Finisher with RestResponse object and passing the model class when execute
 
 ```java
+//Basic
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
     .addJsonBody<JsonModel>(someObject).execute(new Finisher<Response>(){
@@ -104,8 +105,9 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
             // WILL BE EXECUTE AFTER REQUEST IS FINISHED
         }
     });
-    
-    HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+
+//Using RestResponse
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
     .addJsonBody<JsonModel>(someObject).execute(new Finisher<RestResponse<Model>>(){
         @Override
