@@ -1,8 +1,11 @@
 package nayanda.droid.eatr.digester;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by nayanda on 07/02/18.
  * Basic digester interface
+ *
  * @param <T> Response object
  */
 public interface Finisher<T extends Response> {
@@ -13,5 +16,5 @@ public interface Finisher<T extends Response> {
      *
      * @param response
      */
-    void onFinished(T response);
+    void onFinished(@NonNull T response);
 }

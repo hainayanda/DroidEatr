@@ -1,6 +1,7 @@
 package nayanda.droid.eatr.base;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -19,6 +20,7 @@ import nayanda.droid.eatr.digester.Finisher;
 import nayanda.droid.eatr.digester.ProgressDigester;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
+
 /**
  * Created by nayanda on 08/02/18.
  */
@@ -30,7 +32,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     private Map<String, String> headers;
     private int timeout = 10000;
 
-    private static String buildUrlWithParam(String url, Map<String, String> params) throws UnsupportedEncodingException {
+    @NonNull
+    private static String buildUrlWithParam(@NonNull String url, Map<String, String> params) throws UnsupportedEncodingException {
         if (params == null) return url;
         if (params.size() == 0) return url;
         StringBuilder strBuilder = new StringBuilder().append(url).append("?");
@@ -44,55 +47,67 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return strBuilder.toString();
     }
 
+    @NonNull
     @Override
-    public T setUrl(String url) {
-        if (url == null) throw new NullPointerException("Url is null");
+    @SuppressWarnings("unchecked")
+    public T setUrl(@NonNull String url) {
         this.url = url;
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T setParams(Map<String, String> params) {
-        if (params == null) throw new NullPointerException("Param is null");
+    @SuppressWarnings("unchecked")
+    public T setParams(@NonNull Map<String, String> params) {
         this.params = params;
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T addParam(String key, String value) {
+    @SuppressWarnings("unchecked")
+    public T addParam(@NonNull String key, @NonNull String value) {
         if (params == null) params = new HashMap<>();
         params.put(key, value);
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T setHeaders(Map<String, String> headers) {
-        if (headers == null) throw new NullPointerException("Header is null");
+    @SuppressWarnings("unchecked")
+    public T setHeaders(@NonNull Map<String, String> headers) {
         this.headers = headers;
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T addHeaders(String key, String value) {
+    @SuppressWarnings("unchecked")
+    public T addHeaders(@NonNull String key, @NonNull String value) {
         if (headers == null) headers = new HashMap<>();
         headers.put(key, value);
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T addAuthorization(String token) {
+    @SuppressWarnings("unchecked")
+    public T addAuthorization(@NonNull String token) {
         if (headers == null) headers = new HashMap<>();
         headers.put("Authorization", "bearer " + token);
         return (T) this;
     }
 
+    @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public T setTimeout(int timeout) {
         this.timeout = timeout;
         return (T) this;
     }
 
-    private HttpURLConnection initRequest(ProgressDigester progressDigester) throws IOException {
+    @NonNull
+    private HttpURLConnection initRequest(@NonNull ProgressDigester progressDigester) throws IOException {
         String fullUrl = buildUrlWithParam(url, params);
         progressDigester.onProgress(0.1f);
         URL urlObj = new URL(fullUrl);
@@ -108,6 +123,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return connection;
     }
 
+    @NonNull
     private HttpURLConnection initRequest() throws IOException {
         String fullUrl = buildUrlWithParam(url, params);
         URL urlObj = new URL(fullUrl);
@@ -119,7 +135,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected void asyncExecutor(
-            final String method, final String body, final ProgressDigester<Response> responseProgressDigester) {
+            @NonNull final String method, final String body, @NonNull final ProgressDigester<Response> responseProgressDigester) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -147,8 +163,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected <O> void asyncExecutor(
-            final Class<O> oClass, final String method, final String body,
-            final ProgressDigester<RestResponse<O>> restResponseProgressDigester) {
+            @NonNull final Class<O> oClass, @NonNull final String method, final String body,
+            @NonNull final ProgressDigester<RestResponse<O>> restResponseProgressDigester) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -175,7 +191,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected void asyncExecutor(
-            final String method, final String body, final Digester<Response> responseDigester) {
+            @NonNull final String method, final String body, @NonNull final Digester<Response> responseDigester) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -199,8 +215,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected <O> void asyncExecutor(
-            final Class<O> oClass, final String method, final String body,
-            final Digester<RestResponse<O>> restResponseDigester) {
+            @NonNull final Class<O> oClass, @NonNull final String method, final String body,
+            @NonNull final Digester<RestResponse<O>> restResponseDigester) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -224,7 +240,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected void asyncExecutor(
-            final String method, final String body, final Finisher<Response> responseFinisher) {
+            @NonNull final String method, final String body, @NonNull final Finisher<Response> responseFinisher) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -245,8 +261,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
     }
 
     protected <O> void asyncExecutor(
-            final Class<O> oClass, final String method, final String body,
-            final Finisher<RestResponse<O>> restResponseFinisher) {
+            @NonNull final Class<O> oClass, @NonNull final String method, final String body,
+            @NonNull final Finisher<RestResponse<O>> restResponseFinisher) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -267,7 +283,8 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         });
     }
 
-    protected Response executor(final String method, final String body) {
+    @NonNull
+    protected Response executor(@NonNull final String method, final String body) {
         final Response[] response = new Response[1];
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AsyncTask.execute(new Runnable() {
@@ -294,9 +311,10 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return response[0];
     }
 
+    @NonNull
     protected <O> RestResponse<O> executor(
-            final Class<O> oClass, final String method, final String body) {
-        final RestResponse[] restResponse = new RestResponse[1];
+            @NonNull final Class<O> oClass, @NonNull final String method, final String body) {
+        final RestResponse<O>[] restResponse = new RestResponse[1];
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         AsyncTask.execute(new Runnable() {
             @Override
@@ -322,10 +340,12 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
         return restResponse[0];
     }
 
-    protected Response executor(String method) {
+    @NonNull
+    protected Response executor(@NonNull String method) {
         return executor(method, null);
     }
 
+    @NonNull
     protected <O> RestResponse<O> executor(Class<O> oClass, String method) {
         return executor(oClass, method, null);
     }

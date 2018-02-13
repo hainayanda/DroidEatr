@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.base;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -20,17 +22,12 @@ import nayanda.droid.eatr.digester.RestResponse;
 
 class HttpURLConnectionHelper {
 
-    private static boolean isSuccess(HttpURLConnection connection) throws IOException {
-        int responseCode = connection.getResponseCode();
-        return (responseCode >= 200 && responseCode < 300);
-    }
-
+    @org.jetbrains.annotations.Contract(pure = true)
     private static boolean isSuccess(int responseCode) {
         return (responseCode >= 200 && responseCode < 300);
     }
 
-    public static void addHeaders(HttpURLConnection connection, Map<String, String> headers) {
-        if (headers == null) return;
+    static void addHeaders(@NonNull HttpURLConnection connection, @NonNull Map<String, String> headers) {
         if (headers.size() == 0) return;
         Set<Map.Entry<String, String>> entries = headers.entrySet();
         for (Map.Entry<String, String> entry : entries) {
@@ -38,13 +35,14 @@ class HttpURLConnectionHelper {
         }
     }
 
-    public static void addBody(HttpURLConnection connection, String body) throws IOException {
+    static void addBody(@NonNull HttpURLConnection connection, String body) throws IOException {
         if (body == null) return;
         connection.setRequestProperty("Content-Length", (Integer.valueOf(body.length())).toString());
         connection.getOutputStream().write(body.getBytes(Charset.forName("UTF8")));
     }
 
-    private static String bufferExtractor(BufferedReader reader) throws IOException {
+    @NonNull
+    private static String bufferExtractor(@NonNull BufferedReader reader) throws IOException {
         StringBuilder builder = new StringBuilder();
         String line = reader.readLine();
         while (line != null) {
@@ -55,12 +53,13 @@ class HttpURLConnectionHelper {
         return builder.toString();
     }
 
-    public static Response execute(HttpURLConnection connection, ProgressDigester progressDigester) throws IOException {
-        int statusCode = -1;
+    @NonNull
+    static Response execute(@NonNull HttpURLConnection connection, @NonNull ProgressDigester progressDigester) throws IOException {
+        int statusCode;
         Response response;
         statusCode = connection.getResponseCode();
         progressDigester.onProgress(0.7f);
-        if (!isSuccess(connection) || connection.getInputStream() == null)
+        if (!isSuccess(statusCode) || connection.getInputStream() == null)
             response = new Response(null, statusCode, false);
         else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -72,12 +71,13 @@ class HttpURLConnectionHelper {
         return response;
     }
 
-    public static <T> RestResponse<T> execute(HttpURLConnection connection, Class<T> tClass, ProgressDigester progressDigester) throws IOException {
-        int statusCode = -1;
+    @NonNull
+    static <T> RestResponse<T> execute(@NonNull HttpURLConnection connection, @NonNull Class<T> tClass, @NonNull ProgressDigester progressDigester) throws IOException {
+        int statusCode;
         RestResponse<T> response;
         statusCode = connection.getResponseCode();
         progressDigester.onProgress(0.7f);
-        if (!isSuccess(connection) || connection.getInputStream() == null)
+        if (!isSuccess(statusCode) || connection.getInputStream() == null)
             response = new RestResponse<>(null, null, statusCode, false);
         else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -95,37 +95,39 @@ class HttpURLConnectionHelper {
         return response;
     }
 
-    public static Response execute(HttpURLConnection connection) throws IOException {
-        int statusCode = -1;
+    @NonNull
+    static Response execute(@NonNull HttpURLConnection connection) throws IOException {
+        int statusCode;
         Response response;
-            statusCode = connection.getResponseCode();
-            if (!isSuccess(connection) || connection.getInputStream() == null)
-                response = new Response(null, statusCode, false);
-            else {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String extracted = bufferExtractor(reader);
-                response = new Response(extracted, statusCode, isSuccess(statusCode));
-            }
+        statusCode = connection.getResponseCode();
+        if (!isSuccess(statusCode) || connection.getInputStream() == null)
+            response = new Response(null, statusCode, false);
+        else {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String extracted = bufferExtractor(reader);
+            response = new Response(extracted, statusCode, isSuccess(statusCode));
+        }
         return response;
     }
 
-    public static <T> RestResponse<T> execute(HttpURLConnection connection, Class<T> tClass) throws IOException {
-        int statusCode = -1;
+    @NonNull
+    static <T> RestResponse<T> execute(@NonNull HttpURLConnection connection, @NonNull Class<T> tClass) throws IOException {
+        int statusCode;
         RestResponse<T> response;
-            statusCode = connection.getResponseCode();
-            if (!isSuccess(connection) || connection.getInputStream() == null)
-                response = new RestResponse<>(null, null, statusCode, false);
+        statusCode = connection.getResponseCode();
+        if (!isSuccess(statusCode) || connection.getInputStream() == null)
+            response = new RestResponse<>(null, null, statusCode, false);
+        else {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String extracted = bufferExtractor(reader);
+            if (extracted.equals(""))
+                response = new RestResponse<>(extracted, null, statusCode, isSuccess(statusCode));
             else {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String extracted = bufferExtractor(reader);
-                if (extracted.equals(""))
-                    response = new RestResponse<>(extracted, null, statusCode, isSuccess(statusCode));
-                else {
-                    Gson gson = new Gson();
-                    T obj = gson.fromJson(extracted, tClass);
-                    response = new RestResponse<>(extracted, obj, statusCode, isSuccess(statusCode));
-                }
+                Gson gson = new Gson();
+                T obj = gson.fromJson(extracted, tClass);
+                response = new RestResponse<>(extracted, obj, statusCode, isSuccess(statusCode));
             }
+        }
         return response;
     }
 }

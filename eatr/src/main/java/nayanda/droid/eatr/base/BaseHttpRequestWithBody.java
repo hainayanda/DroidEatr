@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.base;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
@@ -15,24 +17,28 @@ public abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody>
 
     protected String body;
 
+    @NonNull
     @Override
-    public T addBody(String body) {
+    @SuppressWarnings("unchecked")
+    public T addBody(@NonNull String body) {
         this.body = body;
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public <O> T addJsonBody(O obj) {
-        if (obj == null) throw new NullPointerException("Json body cannot be null");
+    @SuppressWarnings("unchecked")
+    public <O> T addJsonBody(@NonNull O obj) {
         Gson gson = new Gson();
         this.body = gson.toJson(obj);
         addHeaders("Content-Type", "application/json");
         return (T) this;
     }
 
+    @NonNull
     @Override
-    public T addFormUrlEncoded(Map<String, String> form) throws UnsupportedEncodingException {
-        if (form == null) throw new NullPointerException("Form cannot be null");
+    @SuppressWarnings("unchecked")
+    public T addFormUrlEncoded(@NonNull Map<String, String> form) throws UnsupportedEncodingException {
         if (form.size() == 0) return (T) this;
         StringBuilder builder = new StringBuilder();
         Set<Map.Entry<String, String>> entries = form.entrySet();

@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.digester;
 
+import android.support.annotation.NonNull;
+
 import java.net.HttpURLConnection;
 
 /**
@@ -10,18 +12,18 @@ import java.net.HttpURLConnection;
  */
 public interface Digester<T extends Response> {
     /**
-     * Will run right before estabilishing the connection
+     * Will run right before establishing the connection
      *
      * @param connection
      */
-    void onBeforeSending(HttpURLConnection connection);
+    void onBeforeSending(@NonNull HttpURLConnection connection);
 
     /**
      * will ONLY run when connection got a response
      *
      * @param response
      */
-    void onResponded(T response);
+    void onResponded(@NonNull T response);
 
     /**
      * will ONLY run when connection is timeout
@@ -31,5 +33,5 @@ public interface Digester<T extends Response> {
     /**
      * will ONLY run when there is an unhandled exception
      */
-    void onException(Exception exception);
+    void onException(@NonNull Exception exception);
 }

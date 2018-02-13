@@ -4,9 +4,9 @@ package nayanda.droid.eatr.digester;
  * Created by nayanda on 07/02/18.
  */
 public class Response {
-    private String rawBody;
-    private int statusCode;
-    private boolean isSuccess;
+    private final String rawBody;
+    private final int statusCode;
+    private final boolean isSuccess;
     private Exception exception;
 
     public Response(String rawBody, int statusCode, boolean isSuccess) {

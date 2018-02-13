@@ -1,6 +1,7 @@
 package nayanda.droid.eatr.builder;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
 import nayanda.droid.eatr.digester.Digester;
@@ -16,27 +17,27 @@ import nayanda.droid.eatr.digester.RestResponse;
 class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
-    public void asyncExecute(ProgressDigester<Response> responseProgressDigester) {
+    public void asyncExecute(@NonNull ProgressDigester<Response> responseProgressDigester) {
         asyncExecutor("PUT", body, responseProgressDigester);
     }
 
     @Override
-    public <O> void asyncExecute(ProgressDigester<RestResponse<O>> restResponseProgressDigester, Class<O> withModelClass) {
+    public <O> void asyncExecute(@NonNull ProgressDigester<RestResponse<O>> restResponseProgressDigester, @NonNull Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 
     @Override
-    public void asyncExecute(final Digester<Response> responseDigester) {
+    public void asyncExecute(@NonNull final Digester<Response> responseDigester) {
         asyncExecutor("PUT", body, responseDigester);
     }
 
     @Override
-    public <O> void asyncExecute(final Digester<RestResponse<O>> restResponseDigester, final Class<O> withModelClass) {
+    public <O> void asyncExecute(@NonNull final Digester<RestResponse<O>> restResponseDigester, @NonNull final Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 
     @Override
-    public void asyncExecute(final Finisher<Response> responseFinisher) {
+    public void asyncExecute(@NonNull final Finisher<Response> responseFinisher) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -47,17 +48,19 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
     }
 
     @Override
-    public <O> void asyncExecute(final Finisher<RestResponse<O>> restResponseFinisher, final Class<O> withModelClass) {
+    public <O> void asyncExecute(@NonNull final Finisher<RestResponse<O>> restResponseFinisher, @NonNull final Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 
+    @NonNull
     @Override
     public Response execute() {
         return executor("PUT", body);
     }
 
+    @NonNull
     @Override
-    public <O> RestResponse<O> execute(Class<O> withModelClass) {
+    public <O> RestResponse<O> execute(@NonNull Class<O> withModelClass) {
         throw new UnsupportedOperationException("PUT doesn't have response body");
     }
 }

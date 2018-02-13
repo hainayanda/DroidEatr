@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.base;
 
+import android.support.annotation.NonNull;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
@@ -8,9 +10,12 @@ import java.util.Map;
  */
 
 public interface HttpRequestWithBody<T extends HttpRequestWithBody> extends HttpRequest<T> {
-    T addBody(String body);
+    @NonNull
+    T addBody(@NonNull String body);
 
-    <O> T addJsonBody(O obj);
+    @NonNull
+    <O> T addJsonBody(@NonNull O obj);
 
-    T addFormUrlEncoded(Map<String, String> form) throws UnsupportedEncodingException;
+    @NonNull
+    T addFormUrlEncoded(@NonNull Map<String, String> form) throws UnsupportedEncodingException;
 }

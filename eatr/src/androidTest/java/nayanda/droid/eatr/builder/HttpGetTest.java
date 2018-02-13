@@ -1,5 +1,6 @@
 package nayanda.droid.eatr.builder;
 
+import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Test;
@@ -47,12 +48,12 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onBeforeSending(HttpURLConnection connection) {
+                    public void onBeforeSending(@NonNull HttpURLConnection connection) {
                         isRunBeforeSending[0] = true;
                     }
 
                     @Override
-                    public void onResponded(Response response) {
+                    public void onResponded(@NonNull Response response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }
@@ -64,7 +65,7 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onException(Exception exception) {
+                    public void onException(@NonNull Exception exception) {
                         isException[0] = true;
                         countDownLatch.countDown();
                     }
@@ -99,12 +100,12 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onBeforeSending(HttpURLConnection connection) {
+                    public void onBeforeSending(@NonNull HttpURLConnection connection) {
                         isRunBeforeSending[0] = true;
                     }
 
                     @Override
-                    public void onResponded(RestResponse response) {
+                    public void onResponded(@NonNull RestResponse response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }
@@ -116,7 +117,7 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onException(Exception exception) {
+                    public void onException(@NonNull Exception exception) {
                         isException[0] = true;
                         countDownLatch.countDown();
                     }
@@ -146,12 +147,12 @@ public class HttpGetTest {
                 .addHeaders("API-KEY", "default").addParam("username", "kryokrait")
                 .asyncExecute(new Digester<Response>() {
                     @Override
-                    public void onBeforeSending(HttpURLConnection connection) {
+                    public void onBeforeSending(@NonNull HttpURLConnection connection) {
                         isRunBeforeSending[0] = true;
                     }
 
                     @Override
-                    public void onResponded(Response response) {
+                    public void onResponded(@NonNull Response response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }
@@ -163,7 +164,7 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onException(Exception exception) {
+                    public void onException(@NonNull Exception exception) {
                         isException[0] = true;
                         countDownLatch.countDown();
                     }
@@ -188,12 +189,12 @@ public class HttpGetTest {
                 .addHeaders("API-KEY", "default").addParam("username", "kryokrait")
                 .asyncExecute(new Digester<RestResponse>() {
                     @Override
-                    public void onBeforeSending(HttpURLConnection connection) {
+                    public void onBeforeSending(@NonNull HttpURLConnection connection) {
                         isRunBeforeSending[0] = true;
                     }
 
                     @Override
-                    public void onResponded(RestResponse response) {
+                    public void onResponded(@NonNull RestResponse response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }
@@ -205,7 +206,7 @@ public class HttpGetTest {
                     }
 
                     @Override
-                    public void onException(Exception exception) {
+                    public void onException(@NonNull Exception exception) {
                         isException[0] = true;
                         countDownLatch.countDown();
                     }
@@ -230,7 +231,7 @@ public class HttpGetTest {
                 .addHeaders("API-KEY", "default").addParam("username", "kryokrait")
                 .asyncExecute(new Finisher<Response>() {
                     @Override
-                    public void onFinished(Response response) {
+                    public void onFinished(@NonNull Response response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }
@@ -251,7 +252,7 @@ public class HttpGetTest {
                 .asyncExecute(new Finisher<RestResponse<User>>() {
 
                     @Override
-                    public void onFinished(RestResponse<User> response) {
+                    public void onFinished(@NonNull RestResponse<User> response) {
                         reservedResponse[0] = response;
                         countDownLatch.countDown();
                     }

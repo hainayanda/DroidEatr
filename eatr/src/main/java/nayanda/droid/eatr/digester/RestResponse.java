@@ -4,7 +4,7 @@ package nayanda.droid.eatr.digester;
  * Created by nayanda on 07/02/18.
  */
 public class RestResponse<T> extends Response {
-    private T parsedBody;
+    private final T parsedBody;
 
     public RestResponse(String rawBody, T parsedBody, int statusCode, boolean isSuccess) {
         super(rawBody, statusCode, isSuccess);
