@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="192" height="192" src="droid.eatr.png"/>
+  <img width="128" height="192" src="droid.eatr.png"/>
 </p>
 
 # DroidEatr
