@@ -4,6 +4,7 @@
 
 # DroidEatr
 RESTful web service consumer for android with builder
+[![](https://jitpack.io/v/nayanda1/DroidEatr.svg)](https://jitpack.io/#nayanda1/DroidEatr)
 
 ---
 ## Changelog
@@ -155,7 +156,7 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
 ```
 
 ### Asynchronous using progress digester
-Same like when using finisher, but instead using Digester. digester have 4 method:
+Same like when using finisher, but instead using ProgressDigester. progress digester have 4 method:
 - onProgress which will run for every progress, it will give the progress in float start from 0.0f to 1.0f  
 Because this method will called periodically, its better if you're not put object creation inside this method
 - onBeforeSending which will run before sending
