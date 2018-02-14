@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.digester;
 
+import java.net.SocketTimeoutException;
+
 /**
  * Created by nayanda on 07/02/18.
  */
@@ -34,6 +36,14 @@ public class Response {
 
     public boolean hadException() {
         return exception != null;
+    }
+
+    public boolean isTimeout() {
+        return exception instanceof SocketTimeoutException;
+    }
+
+    public boolean hadBody() {
+        return rawBody != null && !rawBody.equals("");
     }
 
     public Exception getException() {

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
@@ -304,7 +303,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
             }
         });
         try {
-            countDownLatch.await(timeout * 2, TimeUnit.MILLISECONDS);
+            countDownLatch.await();
         } catch (InterruptedException exception) {
             response[0] = new Response(null, -1, false, exception);
         }
@@ -333,7 +332,7 @@ public abstract class BaseHttpRequest<T extends BaseHttpRequest> implements Http
             }
         });
         try {
-            countDownLatch.await(timeout * 2, TimeUnit.MILLISECONDS);
+            countDownLatch.await();
         } catch (InterruptedException exception) {
             restResponse[0] = new RestResponse<O>(null, null, -1, false, exception);
         }
