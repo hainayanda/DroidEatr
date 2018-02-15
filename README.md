@@ -40,7 +40,7 @@ allprojects {
 On build.gradle (Module)
 ```
 dependencies {
-    compile 'com.github.nayanda1:DroidEatr:v0.0.10'
+    compile 'com.github.nayanda1:DroidEatr:v0.1.0'
 }
 ```
 
@@ -59,7 +59,7 @@ Add on your maven dependency
 <dependency>
     <groupId>com.github.nayanda1</groupId>
     <artifactId>DroidEatr</artifactId>
-    <version>v0.0.10</version>
+    <version>v0.1.0</version>
 </dependency>
 ```
 
@@ -196,6 +196,63 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
             //YOUR CODE HERE
         }
     });
+```
+
+### Asynchronous using executor
+Same like any async http request, but you can set your consumer separately. you can set 5 consumer:
+- setOnProgress which will run for every progress, it will give the progress in float start from 0.0f to 1.0f  
+Because this method will called periodically, its better if you're not put object creation inside this method
+- setOnBeforeSending which will run before sending
+- setOnResponded which will **ONLY** run when you get response
+- setOnTimeout which will **ONLY** run when you get no response after timeout
+- setOnException which will **ONLY** run when you get unhandled exception 
+- setOnFinished which will run after all request is complete  
+
+You don't need to set all of the consumer. just the one you need.
+If your response contains some Json, you can pass your model class into the executor
+
+```java
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody<JsonModel>(someObject)
+    .usingExecutor(Model.class)
+    .setOnTimeout(new Runnable() {
+        @Override
+        public void run() {
+            //YOUR CODE HERE
+        }
+    })
+    .setOnBeforeSending(new Consumer<HttpURLConnection>() {
+        @Override
+        public void onConsume(HttpURLConnection param) {
+            //YOUR CODE HERE
+        }
+    })
+    .setOnException(new Consumer<Exception>() {
+        @Override
+        public void onConsume(Exception param) {
+            //YOUR CODE HERE
+        }
+    })
+    .setOnProgress(new Consumer<Float>() {
+        @Override
+        public void onConsume(Float param) {
+            //YOUR CODE HERE
+        }
+    })
+    .setOnResponded(new Consumer<RestResponse<Model>>() {
+        @Override
+        public void onConsume(RestResponse<User> param) {
+            //YOUR CODE HERE
+        }
+    })
+    .setOnFinished(new Consumer<RestResponse<Model>>() {
+        @Override
+        public void onConsume(RestResponse<Model> param) {
+            //YOUR CODE HERE
+        }
+    })
+    .execute();
 ```
 
 ---

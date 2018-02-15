@@ -2,9 +2,6 @@ package nayanda.droid.eatr.builder;
 
 import android.support.annotation.NonNull;
 
-import nayanda.droid.eatr.base.HttpRequest;
-import nayanda.droid.eatr.base.HttpRequestWithBody;
-
 /**
  * Created by nayanda on 07/02/18.
  */
@@ -12,17 +9,17 @@ import nayanda.droid.eatr.base.HttpRequestWithBody;
 public class HttpRequestBuilder {
 
     @NonNull
-    public static HttpRequestWithBody httpPost() {
+    public static HttpPost httpPost() {
         return new HttpPost();
     }
 
     @NonNull
-    public static HttpRequest httpGet() {
+    public static HttpGet httpGet() {
         return new HttpGet();
     }
 
     @NonNull
-    public static HttpRequestWithBody httpPut() {
+    public static HttpPut httpPut() {
         return new HttpPut();
     }
 

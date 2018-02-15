@@ -1,9 +1,9 @@
 package nayanda.droid.eatr.builder;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import nayanda.droid.eatr.base.BaseHttpRequestWithBody;
+import nayanda.droid.eatr.base.HttpRequestExecutorImpl;
 import nayanda.droid.eatr.digester.Digester;
 import nayanda.droid.eatr.digester.Finisher;
 import nayanda.droid.eatr.digester.ProgressDigester;
@@ -14,11 +14,15 @@ import nayanda.droid.eatr.digester.RestResponse;
  * Created by nayanda on 08/02/18.
  */
 
-class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
+public class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
+
+    HttpPut() {
+        super("PUT");
+    }
 
     @Override
     public void asyncExecute(@NonNull ProgressDigester<Response> responseProgressDigester) {
-        asyncExecutor("PUT", body, responseProgressDigester);
+        asyncExecutor(method, body, new HttpRequestExecutorImpl(this, responseProgressDigester));
     }
 
     @Override
@@ -28,7 +32,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(@NonNull final Digester<Response> responseDigester) {
-        asyncExecutor("PUT", body, responseDigester);
+        asyncExecutor(method, body, new HttpRequestExecutorImpl(this, responseDigester));
     }
 
     @Override
@@ -38,13 +42,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
 
     @Override
     public void asyncExecute(@NonNull final Finisher<Response> responseFinisher) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Response response = executor("PUT", body);
-                responseFinisher.onFinished(response);
-            }
-        });
+        asyncExecutor(method, body, new HttpRequestExecutorImpl(this, responseFinisher));
     }
 
     @Override
@@ -55,7 +53,7 @@ class HttpPut extends BaseHttpRequestWithBody<HttpPost> {
     @NonNull
     @Override
     public Response execute() {
-        return executor("PUT", body);
+        return executor(method, body);
     }
 
     @NonNull

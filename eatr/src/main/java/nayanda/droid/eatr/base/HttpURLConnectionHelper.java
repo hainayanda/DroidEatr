@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
 
-import nayanda.droid.eatr.digester.ProgressDigester;
+import nayanda.droid.eatr.digester.Consumer;
 import nayanda.droid.eatr.digester.Response;
 import nayanda.droid.eatr.digester.RestResponse;
 
@@ -53,35 +53,35 @@ class HttpURLConnectionHelper {
     }
 
     @NonNull
-    static Response execute(@NonNull HttpURLConnection connection, @NonNull ProgressDigester progressDigester) throws IOException {
+    static Response execute(@NonNull HttpURLConnection connection, @NonNull Consumer<Float> progressConsumer) throws IOException {
         int statusCode;
         Response response;
         statusCode = connection.getResponseCode();
-        progressDigester.onProgress(0.7f);
+        progressConsumer.onConsume(0.7f);
         if (!isSuccess(statusCode) || connection.getInputStream() == null)
             response = new Response(null, statusCode, false);
         else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            progressDigester.onProgress(0.8f);
+            progressConsumer.onConsume(0.8f);
             String extracted = bufferExtractor(reader);
             response = new Response(extracted, statusCode, isSuccess(statusCode));
         }
-        progressDigester.onProgress(0.9f);
+        progressConsumer.onConsume(0.9f);
         return response;
     }
 
     @NonNull
-    static <T> RestResponse<T> execute(@NonNull HttpURLConnection connection, @NonNull Class<T> tClass, @NonNull ProgressDigester progressDigester) throws IOException {
+    static <T> RestResponse<T> execute(@NonNull HttpURLConnection connection, @NonNull Class<T> tClass, @NonNull Consumer<Float> progressConsumer) throws IOException {
         int statusCode;
         RestResponse<T> response;
         statusCode = connection.getResponseCode();
-        progressDigester.onProgress(0.7f);
+        progressConsumer.onConsume(0.7f);
         if (!isSuccess(statusCode) || connection.getInputStream() == null)
             response = new RestResponse<>(null, null, statusCode, false);
         else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String extracted = bufferExtractor(reader);
-            progressDigester.onProgress(0.8f);
+            progressConsumer.onConsume(0.8f);
             if (extracted.equals(""))
                 response = new RestResponse<>(extracted, null, statusCode, isSuccess(statusCode));
             else {
@@ -90,7 +90,7 @@ class HttpURLConnectionHelper {
                 response = new RestResponse<>(extracted, obj, statusCode, isSuccess(statusCode));
             }
         }
-        progressDigester.onProgress(0.9f);
+        progressConsumer.onConsume(0.9f);
         return response;
     }
 

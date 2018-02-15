@@ -17,6 +17,14 @@ public abstract class BaseHttpRequestWithBody<T extends BaseHttpRequestWithBody>
 
     protected String body;
 
+    protected BaseHttpRequestWithBody(String method) {
+        super(method);
+    }
+
+    String getBody() {
+        return body;
+    }
+
     @NonNull
     @Override
     @SuppressWarnings("unchecked")

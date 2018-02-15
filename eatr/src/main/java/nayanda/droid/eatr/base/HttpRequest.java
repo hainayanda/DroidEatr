@@ -55,4 +55,11 @@ public interface HttpRequest<T extends HttpRequest> {
 
     @NonNull
     <O> RestResponse<O> execute(@NonNull Class<O> withModelClass);
+
+    @NonNull
+    HttpRequestExecutor usingExecutor();
+
+    @NonNull
+    <O> HttpRequestRestExecutor<O> usingExecutor(@NonNull Class<O> withModelClass);
+
 }
