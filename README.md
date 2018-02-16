@@ -102,7 +102,7 @@ val statusCode : Int = response.statusCode
 val body : String? = response.rawBody
 
 //HttpPost with Json response and Json body
-val response RestResponse<ResponseClass> = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+val response : RestResponse<ResponseClass> = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
     .addJsonBody(someObject).execute(Model.class);
 
@@ -364,7 +364,7 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .setOnProgress({ param : Float ->
         //YOUR CODE HERE
     })
-    .setOnResponded({ param : RestResponse<User>
+    .setOnResponded({ param : RestResponse<User> ->
         //YOUR CODE HERE
     })
     .setOnFinished({ param : RestResponse<Model> ->
