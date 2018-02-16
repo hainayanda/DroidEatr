@@ -269,7 +269,7 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
     .addJsonBody(someObject).execute(object : ProgressDigester<Response>(){
     
-        override onProgress(progress : Float) {
+        override fun onProgress(progress : Float) {
             //YOUR CODE HERE
         }
         
