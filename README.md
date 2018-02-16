@@ -69,7 +69,7 @@ Add on your maven dependency
 3. Congratulation!
 
 ## Usage Example
-### Synchronous
+## Synchronous
 Build the object using HttpRequestBuilder and then execute  
 If your response contains some Json, you can use RestResponse object and passing the model class when execute  
 
@@ -93,20 +93,20 @@ Model responseObj = response.getParsedBody();
 ```
 In Kotlin :
 ```kotlin
-var response : Response = HttpRequestBuilder.httpGet().setUrl("http://your.url.here")
+val response : Response = HttpRequestBuilder.httpGet().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value").execute()
     
 val isSuccess : Boolean = response.isSuccess()
 val hadException : Boolean = response.hadException()
 val statusCode : Int = response.statusCode
-val body = response.rawBody
+val body : String? = response.rawBody
 
 //HttpPost with Json response and Json body
-var response RestResponse<ResponseClass> = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+val response RestResponse<ResponseClass> = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
     .addJsonBody(someObject).execute(Model.class);
 
-var responseObj : Model = response.parsedBody
+val responseObj : Model? = response.parsedBody
 ```
 
 ### Simple Asynchronous
