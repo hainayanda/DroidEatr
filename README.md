@@ -71,8 +71,9 @@ Add on your maven dependency
 ## Usage Example
 ### Synchronous
 Build the object using HttpRequestBuilder and then execute  
-If your response contains some Json, you can use RestResponse object and passing the model class when execute
+If your response contains some Json, you can use RestResponse object and passing the model class when execute  
 
+In Java :
 ```java
 //HttpGet
 Response response = HttpRequestBuilder.httpGet().setUrl("http://your.url.here")
@@ -86,20 +87,38 @@ String body = response.getRawBody();
 //HttpPost with Json response and Json body
 RestResponse<ResponseClass> response = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject).execute(Model.class);
+    .addJsonBody(someObject).execute(Model.class);
 
 Model responseObj = response.getParsedBody();
+```
+In Kotlin :
+```kotlin
+var response : Response = HttpRequestBuilder.httpGet().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value").execute()
+    
+val isSuccess : Boolean = response.isSuccess()
+val hadException : Boolean = response.hadException()
+val statusCode : Int = response.statusCode
+val body = response.rawBody
+
+//HttpPost with Json response and Json body
+var response RestResponse<ResponseClass> = HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject).execute(Model.class);
+
+var responseObj : Model = response.parsedBody
 ```
 
 ### Simple Asynchronous
 Everything is same like synchronous, but you need to pass finisher object into the execute method  
-If your response contains some Json, you can use Finisher with RestResponse object and passing the model class when execute
+If your response contains some Json, you can use Finisher with RestResponse object and passing the model class when execute  
 
+In Java :
 ```java
 //Basic
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject).execute(new Finisher<Response>(){
+    .addJsonBody(someObject).execute(new Finisher<Response>(){
         @Override
         public void onFinished(Response response){
             //YOUR CODE HERE
@@ -110,13 +129,34 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
 //Using RestResponse
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject).execute(new Finisher<RestResponse<Model>>(){
+    .addJsonBody(someObject).execute(new Finisher<RestResponse<Model>>(){
         @Override
         public void onFinished(RestResponse<Model> response){
             //YOUR CODE HERE
             // WILL BE EXECUTE AFTER REQUEST IS FINISHED
         }
     }, Model.class);
+```
+
+In Kotlin :
+```kotlin
+//Basic
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject)
+    .execute{ response ->
+        //YOUR CODE HERE
+        // WILL BE EXECUTE AFTER REQUEST IS FINISHED
+    }
+
+//Using RestResponse
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject)
+    .execute({ response ->
+        //YOUR CODE HERE
+        // WILL BE EXECUTE AFTER REQUEST IS FINISHED
+    }, Model::java.class)
 ```
 
 ### Asynchronous using basic digester
@@ -126,12 +166,13 @@ Same like when using finisher, but instead using Digester. digester have 4 metho
 - onTimeout which will **ONLY** run when you get no response after timeout
 - onException which will **ONLY** run when you get unhandled exception  
 
-If your response contains some Json, you can use Digester with RestResponse object and passing the model class when execute
+If your response contains some Json, you can use Digester with RestResponse object and passing the model class when execute  
 
+In Java :
 ```java
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject).execute(new Digester<Response>(){
+    .addJsonBody(someObject).execute(new Digester<Response>(){
     
         @Override
         public void onBeforeSending(HttpURLConnection connection){
@@ -155,6 +196,29 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     });
 ```
 
+In Kotlin :
+```kotlin
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject).execute(object : Digester<Response>(){
+    
+        override fun onBeforeSending(connection : HttpURLConnection){
+            //YOUR CODE HERE
+        }
+        
+        override fun onResponded(response : RestResponse) {
+            //YOUR CODE HERE
+        }
+        
+        override fun onTimeout() {
+            //YOUR CODE HERE
+        }
+        
+        override fun onException(exception : Exception) {
+            //YOUR CODE HERE
+        }
+    });
+```
 ### Asynchronous using progress digester
 Same like when using finisher, but instead using ProgressDigester. progress digester have 4 method:
 - onProgress which will run for every progress, it will give the progress in float start from 0.0f to 1.0f  
@@ -164,12 +228,13 @@ Because this method will called periodically, its better if you're not put objec
 - onTimeout which will **ONLY** run when you get no response after timeout
 - onException which will **ONLY** run when you get unhandled exception  
 
-If your response contains some Json, you can use ProgressDigester with RestResponse object and passing the model class when execute
+If your response contains some Json, you can use ProgressDigester with RestResponse object and passing the model class when execute  
 
+In Java :
 ```java
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject).execute(new ProgressDigester<Response>(){
+    .addJsonBody(someObject).execute(new ProgressDigester<Response>(){
     
         @Override
         public void onProgress(float progress) {
@@ -198,6 +263,33 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     });
 ```
 
+In Kotlin :
+```kotlin
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject).execute(object : ProgressDigester<Response>(){
+    
+        override onProgress(progress : Float) {
+            //YOUR CODE HERE
+        }
+        
+        override fun onBeforeSending(connection : HttpURLConnection){
+            //YOUR CODE HERE
+        }
+        
+        override fun onResponded(response : RestResponse) {
+            //YOUR CODE HERE
+        }
+        
+        override fun onTimeout() {
+            //YOUR CODE HERE
+        }
+        
+        override fun onException(exception : Exception) {
+            //YOUR CODE HERE
+        }
+    });
+```
 ### Asynchronous using executor
 Same like any async http request, but you can set your consumer separately. you can set 5 consumer:
 - setOnProgress which will run for every progress, it will give the progress in float start from 0.0f to 1.0f  
@@ -209,13 +301,13 @@ Because this method will called periodically, its better if you're not put objec
 - setOnFinished which will run after all request is complete  
 
 You don't need to set all of the consumer. just the one you need.
-If your response contains some Json, you can pass your model class into the executor
+If your response contains some Json, you can pass your model class into the executor  
 
+In Java :
 ```java
 HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
-    .addJsonBody<JsonModel>(someObject)
-    .usingExecutor(Model.class)
+    .addJsonBody(someObject).usingExecutor(Model.class)
     .setOnTimeout(new Runnable() {
         @Override
         public void run() {
@@ -255,6 +347,31 @@ HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
     .execute();
 ```
 
+In Kotlin :
+```kotlin
+HttpRequestBuilder.httpPost().setUrl("http://your.url.here")
+    .addHeaders("SOME-HEADER", "header_value").addParam("param_key", "param_value")
+    .addJsonBody(someObject).usingExecutor(Model.class)
+    .setOnTimeout({
+        //YOUR CODE HERE
+    })
+    .setOnBeforeSending({ param : HttpURLConnection param ->
+        //YOUR CODE HERE
+    })
+    .setOnException({ param : Exception ->
+        //YOUR CODE HERE
+    })
+    .setOnProgress({ param : Float ->
+        //YOUR CODE HERE
+    })
+    .setOnResponded({ param : RestResponse<User>
+        //YOUR CODE HERE
+    })
+    .setOnFinished({ param : RestResponse<Model> ->
+        //YOUR CODE HERE
+    })
+    .execute()
+```
 ---
 ## Contribute
 We would love you for the contribution to **DroidEatr**, just contact me to nayanda1@outlook.com or just pull request
