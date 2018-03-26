@@ -2,6 +2,7 @@ package nayanda.droid.eatr.base;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -125,7 +126,11 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
     protected void onPreExecute() {
         super.onPreExecute();
         publishProgress(0.0f);
-        onBeforeStart.run();
+        try {
+            onBeforeStart.run();
+        } catch (Exception e) {
+            Log.e("ERROR", e.toString());
+        }
         publishProgress(0.25f);
     }
 
@@ -143,10 +148,14 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
             return response;
         }
         catch (Exception e){
-            if(e instanceof SocketTimeoutException)
-                onTimeout.run();
-            else onException.onConsume(e);
-            publishProgress(1f);
+            try {
+                if (e instanceof SocketTimeoutException)
+                    onTimeout.run();
+                else onException.onConsume(e);
+                publishProgress(1f);
+            } catch (Exception er) {
+                Log.e("ERROR", er.toString());
+            }
             return new Response(null, -1, false, e);
         }
     }
@@ -158,8 +167,12 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
 
     @Override
     protected void onPostExecute(Response response) {
-        onResponded.onConsume(response);
-        onFinish.onConsume(response);
+        try {
+            onResponded.onConsume(response);
+            onFinish.onConsume(response);
+        } catch (Exception e) {
+            Log.e("ERROR", e.toString());
+        }
     }
 
     @NonNull
