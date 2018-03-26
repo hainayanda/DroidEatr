@@ -12,6 +12,8 @@ public class Response {
     private final int statusCode;
     private final boolean isSuccess;
     private Exception exception;
+    private boolean isParsedAlready = false;
+    private Object parsed;
 
     public Response(String rawBody, int statusCode, boolean isSuccess) {
         this.rawBody = rawBody;
@@ -29,7 +31,11 @@ public class Response {
     }
 
     public <T> T getParsedBody(Class<T> tClass) {
-        try{
+        if (isParsedAlready) {
+            if (parsed != null) return (T) parsed;
+            else return null;
+        }
+        try {
             Gson gson = new Gson();
             return gson.fromJson(getRawBody(), tClass);
         } catch (Exception e) {
