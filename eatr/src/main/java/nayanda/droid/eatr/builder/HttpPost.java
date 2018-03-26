@@ -2,6 +2,7 @@ package nayanda.droid.eatr.builder;
 
 import android.support.annotation.NonNull;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
@@ -101,19 +102,29 @@ public class HttpPost {
     }
 
     @NonNull
-    public <T> HttpPost setJsonBody(@NonNull T obj) {
-        requestBuilder.setJsonBody(obj);
+    public <T> HttpPost addJsonBody(@NonNull T obj) {
+        requestBuilder.addJsonBody(obj);
         return this;
     }
 
     @NonNull
-    public HttpPost setBody(@NonNull String body) {
-        requestBuilder.setBody(body);
+    public HttpPost addFormUrlEncoded(@NonNull Map<String, String> form) throws UnsupportedEncodingException {
+        requestBuilder.addFormUrlEncoded(form);
+        return this;
+    }
+
+    @NonNull
+    public HttpPost addBody(@NonNull String body) {
+        requestBuilder.addBody(body);
         return this;
     }
 
     public void asyncExecute() {
         requestBuilder.setMethod(method).asyncExecute();
+    }
+
+    public void asyncExecute(Consumer<Response> onFinish) {
+        requestBuilder.setMethod(method).setOnFinish(onFinish).asyncExecute();
     }
 
     public Response execute(){

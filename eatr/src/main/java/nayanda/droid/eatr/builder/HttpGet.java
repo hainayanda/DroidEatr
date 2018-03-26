@@ -104,6 +104,10 @@ public class HttpGet {
         requestBuilder.setMethod(method).asyncExecute();
     }
 
+    public void asyncExecute(Consumer<Response> onFinish) {
+        requestBuilder.setMethod(method).setOnFinish(onFinish).asyncExecute();
+    }
+
     public Response execute(){
         return requestBuilder.setMethod(method).execute();
     }

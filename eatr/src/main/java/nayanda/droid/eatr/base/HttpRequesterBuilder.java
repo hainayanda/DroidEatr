@@ -4,9 +4,12 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +56,7 @@ public class HttpRequesterBuilder {
     }
 
     @NonNull
-    public HttpRequesterBuilder setBody(@NonNull String body) {
+    public HttpRequesterBuilder addBody(@NonNull String body) {
         this.body = body;
         return this;
     }
@@ -79,6 +82,24 @@ public class HttpRequesterBuilder {
     @NonNull
     public HttpRequesterBuilder setOnBeforeStart(@NonNull Runnable onBeforeStart) {
         this.onBeforeStart = onBeforeStart;
+        return this;
+    }
+
+    @NonNull
+    @SuppressWarnings("unchecked")
+    public HttpRequesterBuilder addFormUrlEncoded(@NonNull Map<String, String> form) throws UnsupportedEncodingException {
+        if (form.size() == 0) return this;
+        StringBuilder builder = new StringBuilder();
+        Set<Map.Entry<String, String>> entries = form.entrySet();
+        for (Map.Entry<String, String> entry : entries) {
+            String key = URLEncoder.encode(entry.getKey(), "UTF-8");
+            String value = URLEncoder.encode(entry.getValue(), "UTF-8");
+            builder = builder.append(key).append("=").append(value).append("&");
+        }
+        if (builder.length() > 0 && builder.charAt(builder.length() - 1) == '&')
+            builder = builder.deleteCharAt(builder.length() - 1);
+        addBody(builder.toString());
+        addHeaders("Content-Type", "application/x-www-form-urlencoded");
         return this;
     }
 
@@ -129,7 +150,7 @@ public class HttpRequesterBuilder {
     }
 
     @NonNull
-    public <T> HttpRequesterBuilder setJsonBody(@NonNull T obj) {
+    public <T> HttpRequesterBuilder addJsonBody(@NonNull T obj) {
         Gson gson = new Gson();
         this.body = gson.toJson(obj);
         addHeaders("Content-Type", "application/json");
