@@ -1,5 +1,7 @@
 package nayanda.droid.eatr.digester;
 
+import com.google.gson.Gson;
+
 import java.net.SocketTimeoutException;
 
 /**
@@ -24,6 +26,15 @@ public class Response {
 
     public String getRawBody() {
         return rawBody;
+    }
+
+    public <T> T getParsedBody(Class<T> tClass) {
+        try{
+            Gson gson = new Gson();
+            return gson.fromJson(getRawBody(), tClass);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public int getStatusCode() {

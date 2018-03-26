@@ -2,64 +2,109 @@ package nayanda.droid.eatr.builder;
 
 import android.support.annotation.NonNull;
 
-import nayanda.droid.eatr.base.BaseHttpRequest;
-import nayanda.droid.eatr.base.HttpRequestExecutorImpl;
-import nayanda.droid.eatr.base.HttpRequestRestExecutorImpl;
-import nayanda.droid.eatr.digester.Digester;
-import nayanda.droid.eatr.digester.Finisher;
-import nayanda.droid.eatr.digester.ProgressDigester;
+import java.net.HttpURLConnection;
+import java.util.Map;
+
+import nayanda.droid.eatr.base.HttpRequesterBuilder;
+import nayanda.droid.eatr.digester.Consumer;
 import nayanda.droid.eatr.digester.Response;
-import nayanda.droid.eatr.digester.RestResponse;
 
 /**
  * Created by nayanda on 08/02/18.
  */
 
-public class HttpGet extends BaseHttpRequest<HttpGet> {
+public class HttpGet {
 
-    HttpGet() {
-        super("GET");
-    }
+    private final HttpRequesterBuilder requestBuilder = new HttpRequesterBuilder();
+    private String method;
 
-    @Override
-    public void asyncExecute(@NonNull final ProgressDigester<Response> responseProgressDigester) {
-        asyncExecutor(method, null, new HttpRequestExecutorImpl(this, responseProgressDigester));
-    }
-
-    @Override
-    public <O> void asyncExecute(@NonNull ProgressDigester<RestResponse<O>> restResponseProgressDigester, @NonNull Class<O> withModelClass) {
-        asyncExecutor(method, null, new HttpRequestRestExecutorImpl<>(this, withModelClass, restResponseProgressDigester));
-    }
-
-    @Override
-    public void asyncExecute(@NonNull final Digester<Response> responseDigester) {
-        asyncExecutor(method, null, new HttpRequestExecutorImpl(this, responseDigester));
-    }
-
-    @Override
-    public <O> void asyncExecute(@NonNull final Digester<RestResponse<O>> restResponseDigester, @NonNull final Class<O> withModelClass) {
-        asyncExecutor(method, null, new HttpRequestRestExecutorImpl<>(this, withModelClass, restResponseDigester));
-    }
-
-    @Override
-    public void asyncExecute(@NonNull final Finisher<Response> responseFinisher) {
-        asyncExecutor(method, null, new HttpRequestExecutorImpl(this, responseFinisher));
-    }
-
-    @Override
-    public <O> void asyncExecute(@NonNull final Finisher<RestResponse<O>> restResponseFinisher, @NonNull final Class<O> withModelClass) {
-        asyncExecutor(method, null, new HttpRequestRestExecutorImpl<>(this, withModelClass, restResponseFinisher));
+    public HttpGet(){
+        method = "GET";
     }
 
     @NonNull
-    @Override
-    public Response execute() {
-        return executor(method);
+    public HttpGet setUrl(@NonNull String url) {
+        requestBuilder.setUrl(url);
+        return this;
     }
 
     @NonNull
-    @Override
-    public <O> RestResponse<O> execute(@NonNull Class<O> withModelClass) {
-        return executor(withModelClass, method);
+    public HttpGet setParams(@NonNull Map<String, String> params) {
+        requestBuilder.setParams(params);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setHeaders(@NonNull Map<String, String> headers) {
+        requestBuilder.setHeaders(headers);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setTimeout(int timeout) {
+        requestBuilder.setTimeout(timeout);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnBeforeSending(@NonNull Consumer<HttpURLConnection> onBeforeSending) {
+        requestBuilder.setOnBeforeSending(onBeforeSending);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnTimeout(@NonNull Runnable onTimeout) {
+        requestBuilder.setOnTimeout(onTimeout);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnException(@NonNull Consumer<Exception> onException) {
+        requestBuilder.setOnException(onException);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnProgress(@NonNull Consumer<Float> onProgress) {
+        requestBuilder.setOnProgress(onProgress);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnResponded(@NonNull Consumer<Response> onResponded) {
+        requestBuilder.setOnResponded(onResponded);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet setOnFinish(@NonNull Consumer<Response> onFinish) {
+        requestBuilder.setOnFinish(onFinish);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet addAuthorization(@NonNull String token) {
+        requestBuilder.addAuthorization(token);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet addParam(@NonNull String key, @NonNull String value) {
+        requestBuilder.addParam(key, value);
+        return this;
+    }
+
+    @NonNull
+    public HttpGet addHeaders(@NonNull String key, @NonNull String value) {
+        requestBuilder.addHeaders(key, value);
+        return this;
+    }
+
+    public void asyncExecute() {
+        requestBuilder.setMethod(method).asyncExecute();
+    }
+
+    public Response execute(){
+        return requestBuilder.setMethod(method).execute();
     }
 }
