@@ -36,8 +36,10 @@ public class Response {
             else return null;
         }
         try {
+            isParsedAlready = true;
             Gson gson = new Gson();
-            return gson.fromJson(getRawBody(), tClass);
+            parsed = gson.fromJson(getRawBody(), tClass);
+            return (T) parsed;
         } catch (Exception e) {
             return null;
         }
