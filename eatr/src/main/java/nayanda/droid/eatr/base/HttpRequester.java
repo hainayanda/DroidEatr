@@ -3,7 +3,6 @@ package nayanda.droid.eatr.base;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -93,6 +92,35 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
         else this.onFinish = onFinish;
     }
 
+    @NonNull
+    public static String buildUrlWithParam(@NonNull String url, Map<String, String> params) throws UnsupportedEncodingException {
+        if (params == null) return url;
+        if (params.size() == 0) return url;
+        StringBuilder strBuilder = new StringBuilder().append(url).append("?");
+        Set<Map.Entry<String, String>> entries = params.entrySet();
+        for (Map.Entry<String, String> entry : entries) {
+            strBuilder = strBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8")).append("=")
+                    .append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
+        }
+        if (strBuilder.charAt(strBuilder.length() - 1) == '&')
+            strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
+        return strBuilder.toString();
+    }
+
+    public static void addHeaders(@NonNull HttpURLConnection connection, @NonNull Map<String, String> headers) {
+        if (headers.size() == 0) return;
+        Set<Map.Entry<String, String>> entries = headers.entrySet();
+        for (Map.Entry<String, String> entry : entries) {
+            connection.addRequestProperty(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public static void addBody(@NonNull HttpURLConnection connection, String body) throws IOException {
+        if (body == null) return;
+        connection.setRequestProperty("Content-Length", (Integer.valueOf(body.length())).toString());
+        connection.getOutputStream().write(body.getBytes(Charset.forName("UTF8")));
+    }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -119,8 +147,7 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
                 onTimeout.run();
             else onException.onConsume(e);
             publishProgress(1f);
-            onFinish.onConsume(new Response(null, -1, false, e));
-            return null;
+            return new Response(null, -1, false, e);
         }
     }
 
@@ -131,11 +158,9 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
 
     @Override
     protected void onPostExecute(Response response) {
-        if(response == null) return;
         onResponded.onConsume(response);
         onFinish.onConsume(response);
     }
-
 
     @NonNull
     private HttpURLConnection initRequest() throws IOException {
@@ -147,35 +172,5 @@ public class HttpRequester extends AsyncTask<Void, Float, Response> {
         addHeaders(connection, headers);
         connection.setRequestMethod(method);
         return connection;
-    }
-
-    @NonNull
-    public static String buildUrlWithParam(@NonNull String url, Map<String, String> params) throws UnsupportedEncodingException {
-        if (params == null) return url;
-        if (params.size() == 0) return url;
-        StringBuilder strBuilder = new StringBuilder().append(url).append("?");
-        Set<Map.Entry<String, String>> entries = params.entrySet();
-        for (Map.Entry<String, String> entry : entries) {
-            strBuilder = strBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8")).append("=")
-                    .append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
-        }
-        if (strBuilder.charAt(strBuilder.length() - 1) == '&')
-            strBuilder = strBuilder.deleteCharAt(strBuilder.length() - 1);
-        return strBuilder.toString();
-    }
-
-
-    public static void addHeaders(@NonNull HttpURLConnection connection, @NonNull Map<String, String> headers) {
-        if (headers.size() == 0) return;
-        Set<Map.Entry<String, String>> entries = headers.entrySet();
-        for (Map.Entry<String, String> entry : entries) {
-            connection.addRequestProperty(entry.getKey(), entry.getValue());
-        }
-    }
-
-    public static void addBody(@NonNull HttpURLConnection connection, String body) throws IOException {
-        if (body == null) return;
-        connection.setRequestProperty("Content-Length", (Integer.valueOf(body.length())).toString());
-        connection.getOutputStream().write(body.getBytes(Charset.forName("UTF8")));
     }
 }
